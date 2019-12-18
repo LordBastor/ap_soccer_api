@@ -25,15 +25,7 @@ class Trip(models.Model):
     package_options = models.ManyToManyField(Package)
 
     def __str__(self):
-        from_date_str = None
-        if self.from_date:
-            from_date_str = self.from_date.date()
-
-        to_date_str = None
-        if self.to_date:
-            to_date_str = self.to_date.date()
-
-        return "{} from {} to {}".format(self.name, from_date_str, to_date_str)
+        return "{} from {} to {}".format(self.name, self.from_date, self.to_date)
 
 
 class TripInvitation(models.Model):
