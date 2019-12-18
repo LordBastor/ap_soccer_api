@@ -21,9 +21,9 @@ class Trip(models.Model):
 
     def __str__(self):
         return "{} from {} to {}".format(
-            self.location, self.from_date.date(), self.to_date.date()
+            self.name, self.from_date.date(), self.to_date.date()
         )
 
 
-class TripInvitation(models.Model):
-    pass
+# class TripInvitation(models.Model):
+#     pass

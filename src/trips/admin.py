@@ -1,4 +1,5 @@
-from django.contrib import admin, forms
+from django.contrib import admin
+from django.forms import ModelForm
 
 from .models import Package, Trip
 
@@ -10,7 +11,7 @@ class PackageAdmin(admin.ModelAdmin):
 admin.site.register(Package, PackageAdmin)
 
 
-class TripAdminForm(forms.ModelAdmin):
+class TripAdminForm(ModelForm):
     def clean_live(self):
         import ipdb
 
