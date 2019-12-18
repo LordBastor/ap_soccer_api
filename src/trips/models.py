@@ -1,5 +1,7 @@
 from django.db import models
 
+from decimal import Decimal
+
 
 class Package(models.Model):
     name = models.CharField(max_length=30)
@@ -15,6 +17,9 @@ class Trip(models.Model):
     from_date = models.DateTimeField(blank=True)
     to_date = models.DateTimeField(blank=True)
     live = models.BooleanField(default=False)
+    deposit_amount = models.DecimalField(
+        max_digits=7, decimal_places=2, default=Decimal(500.00)
+    )
     player_price = models.DecimalField(max_digits=7, decimal_places=2)
     traveler_price = models.DecimalField(max_digits=7, decimal_places=2)
     package_options = models.ManyToManyField(Package)
@@ -25,5 +30,5 @@ class Trip(models.Model):
         )
 
 
-# class TripInvitation(models.Model):
-#     pass
+class TripInvitation(models.Model):
+    pass
