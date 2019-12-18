@@ -31,11 +31,22 @@ class Trip(models.Model):
 
 
 class TripInvitation(models.Model):
-    # player = models.ForeignKey("players.Player", on_delete=models.PROTECT)
-    # trip = models.ForeignKey("trips.Trip", on_delete=models.PROTECT)
-    # uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    # payment =
-    # status =
-    pass
+    SENT = "Sent"
+    STARTED = "Started"
+    DEPOSIT_PAID = "Deposit Paid"
+    PAID = "Paid"
+
+    STATUS_CHOICES = (
+        (SENT, SENT),
+        (STARTED, STARTED),
+        (DEPOSIT_PAID, DEPOSIT_PAID),
+        (PAID, PAID),
+    )
+
+    player = models.ForeignKey("players.Player", on_delete=models.PROTECT)
+    trip = models.ForeignKey("trips.Trip", on_delete=models.PROTECT)
+    payment = models.ForeignKey("payments.Payment", on_delete=models.PROTECT)
+    uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    status = models.CharField(max_length=6, choices=STATUS_CHOICES)
 
     # TODO: Send invitation email post_save
