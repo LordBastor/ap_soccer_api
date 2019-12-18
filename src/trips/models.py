@@ -31,22 +31,31 @@ class Trip(models.Model):
 
 
 class TripInvitation(models.Model):
-    SENT = "Sent"
+    INVITE_SENT = "Invite Sent"
+    INVOICE_SENT = "Invoice Sent"
     STARTED = "Started"
     DEPOSIT_PAID = "Deposit Paid"
     PAID = "Paid"
 
     STATUS_CHOICES = (
-        (SENT, SENT),
+        (INVITE_SENT, INVITE_SENT),
+        (INVOICE_SENT, INVOICE_SENT),
         (STARTED, STARTED),
         (DEPOSIT_PAID, DEPOSIT_PAID),
         (PAID, PAID),
     )
 
+    # Relations and status
+    uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES)
     player = models.ForeignKey("players.Player", on_delete=models.PROTECT)
     trip = models.ForeignKey("trips.Trip", on_delete=models.PROTECT)
     payment = models.ForeignKey("payments.Payment", on_delete=models.PROTECT)
-    uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    status = models.CharField(max_length=6, choices=STATUS_CHOICES)
+
+    # Information
+    # additional_players
+    # additional_travelers
+    # total amount_due
+    # package choices
 
     # TODO: Send invitation email post_save
