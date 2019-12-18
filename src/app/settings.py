@@ -44,7 +44,12 @@ THIRD_PARTY_APPS = [
     "corsheaders",
 ]
 
-PROJECT_APPS = ["users"]
+PROJECT_APPS = [
+    "users",
+    "payments",
+    "players",
+    "trips",
+]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
