@@ -22,6 +22,7 @@ class TripAdminForm(ModelForm):
             raise ValidationError(
                 "Trip has to have from_date and to_date defined in order to go live"
             )
+        return self.cleaned_data["live"]
 
 
 class TripAdmin(admin.ModelAdmin):

@@ -14,8 +14,8 @@ class Package(models.Model):
 
 class Trip(models.Model):
     name = models.CharField(max_length=255, blank=False)
-    from_date = models.DateTimeField(blank=True, null=True)
-    to_date = models.DateTimeField(blank=True, null=True)
+    from_date = models.DateField(blank=True, null=True)
+    to_date = models.DateField(blank=True, null=True)
     live = models.BooleanField(default=False)
     deposit_amount = models.DecimalField(
         max_digits=7, decimal_places=2, default=Decimal(500.00)
@@ -25,9 +25,15 @@ class Trip(models.Model):
     package_options = models.ManyToManyField(Package)
 
     def __str__(self):
-        return "{} from {} to {}".format(
-            self.name, self.from_date.date(), self.to_date.date()
-        )
+        from_date_str = None
+        if self.from_date:
+            from_date_str = self.from_date.date()
+
+        to_date_str = None
+        if self.to_date:
+            to_date_str = self.to_date.date()
+
+        return "{} from {} to {}".format(self.name, from_date_str, to_date_str)
 
 
 class TripInvitation(models.Model):
