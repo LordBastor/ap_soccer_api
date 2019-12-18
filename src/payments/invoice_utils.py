@@ -63,13 +63,14 @@ class PayPalClient:
         trip_date,
         trip_description,
         trip_price,
+        trip_deposit,
         trip_quantity,
         additional_travelers_quantity,
         additional_traveler_price,
     ):
         url = "{}/v2/invoicing/invoices".format(self.root_url)
 
-        trip_deposit = 515 * (trip_quantity + additional_travelers_quantity)
+        trip_deposit = trip_deposit * (trip_quantity + additional_travelers_quantity)
 
         today = datetime.datetime.today()
 
@@ -102,7 +103,7 @@ class PayPalClient:
                 },
             },
             "invoicer": {  # Fill out invoicer info
-                "business_name": "GFL Soccer Enterprises, LLC",
+                "business_name": "AP Soccer Enterprises, LLC",
                 "address": {
                     "address_line_1": "6339 Hobson St. N. E.",
                     "address_line_2": "",
@@ -190,21 +191,3 @@ class PayPalClient:
 # https://www.npmjs.com/package/signature_pad
 # Send reminder button
 # Pass trip date to DUE_DATE
-# Trip
-#     Package
-
-# Package
-#     Name
-#     Price
-
-# TripInvitation
-#     Player
-#     Trip
-#     uid
-#     status (stage of sign-up)
-#     player_count (dynamic)
-#     payment
-
-# Payment
-
-# Player

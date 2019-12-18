@@ -2,6 +2,8 @@ from django.db import models
 
 from decimal import Decimal
 
+import uuid
+
 
 class Package(models.Model):
     name = models.CharField(max_length=30)
@@ -29,4 +31,11 @@ class Trip(models.Model):
 
 
 class TripInvitation(models.Model):
+    # player = models.ForeignKey("players.Player", on_delete=models.PROTECT)
+    # trip = models.ForeignKey("trips.Trip", on_delete=models.PROTECT)
+    # uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    # payment =
+    # status =
     pass
+
+    # TODO: Send invitation email post_save
