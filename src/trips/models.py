@@ -14,8 +14,8 @@ class Package(models.Model):
 
 class Trip(models.Model):
     name = models.CharField(max_length=255, blank=False)
-    from_date = models.DateTimeField(blank=True)
-    to_date = models.DateTimeField(blank=True)
+    from_date = models.DateTimeField(blank=True, null=True)
+    to_date = models.DateTimeField(blank=True, null=True)
     live = models.BooleanField(default=False)
     deposit_amount = models.DecimalField(
         max_digits=7, decimal_places=2, default=Decimal(500.00)

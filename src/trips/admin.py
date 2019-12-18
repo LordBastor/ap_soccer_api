@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core.exceptions import ValidationError
+
 from django.forms import ModelForm
 
 from .models import Package, Trip
@@ -13,9 +15,13 @@ admin.site.register(Package, PackageAdmin)
 
 class TripAdminForm(ModelForm):
     def clean_live(self):
-        import ipdb
-
-        ipdb.set_trace()
+        # Publishing a Trip is only possible if it has from-to dates
+        if self.cleaned_data["live"] and not (
+            self.cleaned_data["from_date"] or self.cleaned_data["to_date"]
+        ):
+            raise ValidationError(
+                "Trip has to have from_date and to_date defined in order to go live"
+            )
 
 
 class TripAdmin(admin.ModelAdmin):
