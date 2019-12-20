@@ -32,4 +32,4 @@ class Player(models.Model):
     emergency_contact = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.name + self.position
+        return self.name + " " + self.position

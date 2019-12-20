@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 
 from django.forms import ModelForm
 
-from .models import Package, Trip
+from .models import Package, Trip, TripInvitation
 
 
 class PackageAdmin(admin.ModelAdmin):
@@ -30,3 +30,12 @@ class TripAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Trip, TripAdmin)
+
+
+class TripInvitationAdmin(admin.ModelAdmin):
+    # TODO: Sort columns by trip status and allow for filtering based on status
+    # Trip | Player | Invitation Status
+    pass
+
+
+admin.site.register(TripInvitation, TripInvitationAdmin)

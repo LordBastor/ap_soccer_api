@@ -59,3 +59,13 @@ class TripInvitation(models.Model):
     # package choices
 
     # TODO: Send invitation email post_save
+    # TODO: Add email recieved
+    # TODO: Check if email bounced
+
+    # TODO: Add clinic field to player model
+    # TODO: Setup player CSV ingestion
+
+    def __str__(self):
+        return "Trip: {} for player {} with status {}".format(
+            self.trip, self.player, self.status
+        )
