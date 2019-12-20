@@ -8,7 +8,14 @@ env = environ.Env()
 
 # .env file, should load only in development environment
 env_file = join(dirname(__file__), "local.env")
+
+# Check for .env prod file
+prod_env_file = join(dirname(__file__), "prod.env")
+
 if exists(env_file):
+    environ.Env.read_env(str(env_file))
+
+elif exists(prod_env_file):
     environ.Env.read_env(str(env_file))
 
 
