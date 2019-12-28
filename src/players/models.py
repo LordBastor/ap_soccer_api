@@ -37,4 +37,4 @@ class Player(models.Model):
     # TODO: Setup player CSV ingestion
 
     def __str__(self):
-        return self.name + " " + self.position
+        return self.first_name + " " + self.last_name + " " + self.position
