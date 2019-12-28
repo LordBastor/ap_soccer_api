@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 
 from django.forms import ModelForm
 
-from .models import Package, Trip, TripInvitation
+from .models import Package, Trip, TripInvitation, TripCompanion
 
 
 class PackageAdmin(admin.ModelAdmin):
@@ -12,6 +12,13 @@ class PackageAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Package, PackageAdmin)
+
+
+class TripCompanionAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(TripCompanion, TripCompanionAdmin)
 
 
 class TripAdminForm(ModelForm):
