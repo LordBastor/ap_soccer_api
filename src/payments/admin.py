@@ -7,7 +7,7 @@ class PaymentAdmin(admin.ModelAdmin):
     readonly_fields = (
         "invoice_number",
         "invoice_url",
-        "amount_paid",
+        "amount_due",
     )
     list_display = (
         "invoice_number",
