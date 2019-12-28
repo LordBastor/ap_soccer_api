@@ -7,7 +7,8 @@ from .models import Package, Trip, TripInvitation
 
 
 class PackageAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("name",)
+    list_display = ("name", "price")
 
 
 admin.site.register(Package, PackageAdmin)

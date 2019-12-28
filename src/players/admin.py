@@ -4,7 +4,13 @@ from .models import Player
 
 
 class PlayerAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "name",
+        "position",
+        "email",
+    )
+    search_fields = ("name",)
+    list_filter = ("position",)
 
 
 admin.site.register(Player, PlayerAdmin)
