@@ -17,9 +17,9 @@ class Player(models.Model):
     FEMALE = "Female"
     GENDER_CHOICES = ((MALE, "Male"), (FEMALE, "Female"))
 
-    parent_name = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
+    parent_name = models.CharField(max_length=255)
     position = models.CharField(max_length=10, choices=POSITION_CHOICES)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
     address = models.CharField(max_length=255)
