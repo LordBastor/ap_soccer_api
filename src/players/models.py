@@ -22,6 +22,7 @@ class Player(models.Model):
     position = models.CharField(max_length=10, choices=POSITION_CHOICES)
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES)
     address = models.CharField(max_length=255)
+    date_of_birth = models.DateField(null=True, blank=True)
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
     country = models.CharField(max_length=255, default="United States")

@@ -8,6 +8,10 @@ class PlayerAdmin(admin.ModelAdmin):
         "name",
         "position",
         "email",
+        "address",
+        "date_of_birth",
+        "city",
+        "state",
     )
     search_fields = ("name",)
     list_filter = ("position",)
