@@ -5,7 +5,8 @@ from .models import Player
 
 class PlayerAdmin(admin.ModelAdmin):
     list_display = (
-        "name",
+        "first_name",
+        "last_name",
         "position",
         "email",
         "address",
