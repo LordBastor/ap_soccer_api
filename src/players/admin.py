@@ -13,6 +13,7 @@ class PlayerAdmin(admin.ModelAdmin):
         "date_of_birth",
         "city",
         "state",
+        "id_clinic",
     )
     search_fields = ("name",)
     list_filter = ("position",)

@@ -61,10 +61,7 @@ class PlayerInline(admin.TabularInline):
 
     def player_name(self, instance):
         if instance:
-            names = instance.player.first_name
-            if instance.player.last_name:
-                names += " {}".format(instance.player.last_name)
-            return instance.player.first_name + instance.player.last_name
+            return "{} {}".format(instance.player.first_name, instance.player.last_name)
 
     player_name.short_description = "Player Name"
 

@@ -32,6 +32,7 @@ class Player(models.Model):
     email = models.EmailField(max_length=255)
     medical_conditions = models.TextField()
     emergency_contact = models.CharField(max_length=255)
+    id_clinic = models.CharField(max_length=255, null=True, blank=True)
 
     # TODO: Add clinic field to player model
     # TODO: Setup player CSV ingestion
