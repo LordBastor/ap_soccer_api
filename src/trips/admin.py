@@ -50,10 +50,60 @@ class TripAdmin(admin.ModelAdmin):
 admin.site.register(Trip, TripAdmin)
 
 
+class PlayerInline(admin.TabularInline):
+    model = TripInvitation.additional_players.through
+    fields = ("player_name", "player_position")
+    readonly_fields = ("player_name", "player_position")
+    extra = 0
+
+    def has_add_permission(self, request):
+        return False
+
+    def player_name(self, instance):
+        if instance:
+            return instance.player.name
+
+    player_name.short_description = "Player Name"
+
+    def player_position(self, instance):
+        if instance:
+            return instance.player.position
+
+    player_position.short_description = "Player Position"
+
+
+class CompanionInline(admin.TabularInline):
+    model = TripInvitation.companions.through
+    fields = ("companion_name", "companion_role")
+    readonly_fields = ("companion_name", "companion_role")
+    can_delete = False
+    extra = 0
+
+    def has_add_permission(self, request):
+        return False
+
+    def companion_name(self, instance):
+        if instance:
+            return instance.tripcompanion.name
+
+    companion_name.short_description = "Companion Name"
+
+    def companion_role(self, instance):
+        if instance:
+            return instance.tripcompanion.role
+
+    companion_role.short_description = "Companion Role"
+
+
 class TripInvitationAdmin(admin.ModelAdmin):
     list_display = ("player", "trip", "status", "get_paid_total")
     readonly_fields = ("status", "total_amount_due", "payment")
     list_filter = ("status",)
+    exclude = ("additional_players", "companions")
+    can_delete = False
+    can_add_related = False
+
+    inlines = (CompanionInline, PlayerInline)
 
     def get_paid_total(self, obj):
         if obj.payment:
