@@ -113,5 +113,7 @@ class TripInvitationAdmin(admin.ModelAdmin):
         else:
             return "Not submitted"
 
+    get_paid_total.short_description = "Current Amount Paid"
+
 
 admin.site.register(TripInvitation, TripInvitationAdmin)
