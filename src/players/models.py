@@ -31,5 +31,8 @@ class Player(models.Model):
     medical_conditions = models.TextField()
     emergency_contact = models.CharField(max_length=255)
 
+    # TODO: Add clinic field to player model
+    # TODO: Setup player CSV ingestion
+
     def __str__(self):
         return self.name + " " + self.position

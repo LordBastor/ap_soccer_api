@@ -33,9 +33,17 @@ admin.site.register(Trip, TripAdmin)
 
 
 class TripInvitationAdmin(admin.ModelAdmin):
-    # TODO: Sort columns by trip status and allow for filtering based on status
-    # Trip | Player | Invitation Status
-    pass
+    list_display = ("player", "trip", "status", "get_paid_total")
+    readonly_fields = ("status", "total_amount_due", "payment")
+    list_filter = ("status",)
+
+    def get_paid_total(self, obj):
+        if obj.payment:
+            return "${} out of ${}".format(
+                int(obj.payment.amount_paid), int(obj.payment.amount_due)
+            )
+        else:
+            return "Not submitted"
 
 
 admin.site.register(TripInvitation, TripInvitationAdmin)
