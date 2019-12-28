@@ -38,4 +38,4 @@ class Player(models.Model):
     # TODO: Setup player CSV ingestion
 
     def __str__(self):
-        return self.first_name + " " + self.last_name + " " + self.position
+        return "{} {} {}".format(self.first_name, self.last_name, self.position)
