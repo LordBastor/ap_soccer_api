@@ -26,6 +26,16 @@ class TripAdminForm(ModelForm):
 
 
 class TripAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "from_date",
+        "to_date",
+        "live",
+        "player_price",
+        "traveler_price",
+    )
+    search_fields = ("name",)
+    list_filter = ("live",)
     form = TripAdminForm
 
 
