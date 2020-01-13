@@ -14,3 +14,6 @@ whitenoise==4.1.4
 
 # Webserver
 gunicorn==20.0.0
+
+# Django Admin Import/Export
+django-import-export==2.0
