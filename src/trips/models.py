@@ -2,6 +2,8 @@ from django.db import models
 
 from decimal import Decimal
 
+from ckeditor.fields import RichTextField
+
 import uuid
 
 
@@ -24,7 +26,9 @@ class Trip(models.Model):
     )
     player_price = models.DecimalField(max_digits=7, decimal_places=2)
     traveler_price = models.DecimalField(max_digits=7, decimal_places=2)
-    package_options = models.ManyToManyField(Package)
+    package_options = models.ManyToManyField("trips.Package")
+    email_template = RichTextField(blank=True, null=True)
+    email_files = models.ManyToManyField("trips.TripDocument")
 
     def __str__(self):
         return "{} from {} to {}".format(self.name, self.from_date, self.to_date)
@@ -37,6 +41,10 @@ class TripCompanion(models.Model):
 
     def __str__(self):
         return "{} - {}".format(self.name, self.role)
+
+
+class TripDocument(models.Model):
+    document = models.FileField(upload_to="documents/")
 
 
 class TripInvitation(models.Model):

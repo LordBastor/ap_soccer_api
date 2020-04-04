@@ -50,13 +50,10 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "import_export",
+    "ckeditor",
 ]
 
-PROJECT_APPS = [
-    "payments",
-    "players",
-    "trips",
-]
+PROJECT_APPS = ["payments", "players", "trips", "users"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 

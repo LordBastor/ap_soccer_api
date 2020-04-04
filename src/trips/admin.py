@@ -3,7 +3,10 @@ from django.core.exceptions import ValidationError
 
 from django.forms import ModelForm
 
-from .models import Package, Trip, TripInvitation, TripCompanion
+from .models import Package, Trip, TripInvitation, TripCompanion, TripDocument
+
+
+admin.site.register(TripDocument)
 
 
 class PackageAdmin(admin.ModelAdmin):
@@ -19,6 +22,10 @@ class TripCompanionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TripCompanion, TripCompanionAdmin)
+
+
+class TripDocumentInline(admin.TabularInline):
+    model = Trip.email_files.through
 
 
 class TripAdminForm(ModelForm):
@@ -45,6 +52,7 @@ class TripAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("live",)
     form = TripAdminForm
+    inlines = (TripDocumentInline,)
 
 
 admin.site.register(Trip, TripAdmin)
