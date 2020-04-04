@@ -7,6 +7,7 @@ from .models import Package, Trip, TripInvitation, TripCompanion, TripDocument
 
 
 admin.site.register(TripDocument)
+admin.site.register(TripCompanion)
 
 
 class PackageAdmin(admin.ModelAdmin):
@@ -15,13 +16,6 @@ class PackageAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Package, PackageAdmin)
-
-
-class TripCompanionAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(TripCompanion, TripCompanionAdmin)
 
 
 class TripDocumentInline(admin.TabularInline):

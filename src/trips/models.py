@@ -4,10 +4,12 @@ from decimal import Decimal
 
 from ckeditor.fields import RichTextField
 
+from app.model_utils import BaseModel
+
 import uuid
 
 
-class Package(models.Model):
+class Package(BaseModel):
     name = models.CharField(max_length=30)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     description = models.TextField(max_length=255, blank=True, null=True)
@@ -16,7 +18,7 @@ class Package(models.Model):
         return "{} - ${}".format(self.name, self.price)
 
 
-class Trip(models.Model):
+class Trip(BaseModel):
     name = models.CharField(max_length=255, blank=False)
     from_date = models.DateField(blank=True, null=True)
     to_date = models.DateField(blank=True, null=True)
@@ -34,7 +36,7 @@ class Trip(models.Model):
         return "{} from {} to {}".format(self.name, self.from_date, self.to_date)
 
 
-class TripCompanion(models.Model):
+class TripCompanion(BaseModel):
     package = models.ForeignKey("trips.Package", on_delete=models.PROTECT)
     name = models.CharField(max_length=30)
     role = models.CharField(max_length=30)
@@ -43,11 +45,11 @@ class TripCompanion(models.Model):
         return "{} - {}".format(self.name, self.role)
 
 
-class TripDocument(models.Model):
+class TripDocument(BaseModel):
     document = models.FileField(upload_to="documents/")
 
 
-class TripInvitation(models.Model):
+class TripInvitation(BaseModel):
     INVITE_SENT = "Invite Sent"
     INVOICE_SENT = "Invoice Sent"
     STARTED = "Started"
