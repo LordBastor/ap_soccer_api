@@ -136,10 +136,9 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files (uploads)
 
-if DEBUG:
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
-    MEDIA_ROOT = "uploads/"
-    MEDIA_URL = "/uploads/"
+DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+MEDIA_ROOT = "uploads/"
+MEDIA_URL = "/uploads/"
 
 # Email settings
 
