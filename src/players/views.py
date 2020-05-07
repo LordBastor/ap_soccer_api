@@ -43,6 +43,7 @@ def invite_to_trip(request, *args, **kwargs):
             invitation.uid,
             trip.name,
             trip.email_template,
+            trip.email_files.all(),
         )
 
         # If something goes wrong - let the user know and remove unused invitation

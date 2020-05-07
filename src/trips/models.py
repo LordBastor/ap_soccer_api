@@ -87,10 +87,7 @@ class TripInvitation(BaseModel):
         max_digits=7, decimal_places=2, blank=True, null=True
     )
 
-    # TODO: Send invitation email post_save
     # TODO: Calculate total amount post_save
-    # TODO: Check if email bounced on send
-    # TODO: Add email recieved - tracking pixel
 
     def __str__(self):
         return "Trip: {} for player {} with status {}".format(
