@@ -51,6 +51,9 @@ class TripCompanion(BaseModel):
 class TripDocument(BaseModel):
     document = models.FileField(upload_to="documents/")
 
+    def __str__(self):
+        return self.document.url
+
 
 class TripInvitation(BaseModel):
     INVITE_SENT = "Invite Sent"
