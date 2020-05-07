@@ -9,63 +9,75 @@ from django.utils.timezone import utc
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trips', '0015_trip_email_files'),
+        ("trips", "0015_trip_email_files"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='package',
-            name='created_date',
-            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2020, 4, 4, 15, 37, 55, 747383, tzinfo=utc)),
+            model_name="package",
+            name="created_date",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=datetime.datetime(2020, 4, 4, 15, 37, 55, 747383, tzinfo=utc),
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='package',
-            name='modified_date',
+            model_name="package",
+            name="modified_date",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='trip',
-            name='created_date',
-            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2020, 4, 4, 15, 38, 0, 997841, tzinfo=utc)),
+            model_name="trip",
+            name="created_date",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=datetime.datetime(2020, 4, 4, 15, 38, 0, 997841, tzinfo=utc),
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='trip',
-            name='modified_date',
+            model_name="trip",
+            name="modified_date",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='tripcompanion',
-            name='created_date',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="tripcompanion",
+            name="created_date",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tripcompanion',
-            name='modified_date',
+            model_name="tripcompanion",
+            name="modified_date",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='tripdocument',
-            name='created_date',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="tripdocument",
+            name="created_date",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tripdocument',
-            name='modified_date',
+            model_name="tripdocument",
+            name="modified_date",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='tripinvitation',
-            name='created_date',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="tripinvitation",
+            name="created_date",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tripinvitation',
-            name='modified_date',
+            model_name="tripinvitation",
+            name="modified_date",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

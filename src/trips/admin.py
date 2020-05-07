@@ -42,6 +42,7 @@ class TripAdmin(admin.ModelAdmin):
         "live",
         "player_price",
         "traveler_price",
+        "created_date",
     )
     search_fields = ("name",)
     list_filter = ("live",)
@@ -98,7 +99,7 @@ class CompanionInline(admin.TabularInline):
 
 
 class TripInvitationAdmin(admin.ModelAdmin):
-    list_display = ("player", "trip", "status", "get_paid_total")
+    list_display = ("player", "trip", "status", "get_paid_total", "created_date")
     readonly_fields = ("status", "total_amount_due", "payment")
     list_filter = ("status",)
     exclude = ("additional_players", "companions")

@@ -1,9 +1,14 @@
+import datetime
+
 from django.contrib import admin
+from django.template.response import TemplateResponse
 
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Player
+from players.models import Player
+
+from trips.models import Trip
 
 
 class PlayerResource(resources.ModelResource):
@@ -42,9 +47,18 @@ class PlayerAdmin(ImportExportModelAdmin):
         "id_clinic",
     )
     search_fields = ("name",)
-    list_filter = ("position",)
+    list_filter = ("position", "id_clinic")
 
+    actions = ["invite_on_trip"]
     resource_class = PlayerResource
+
+    def invite_on_trip(modeladmin, request, queryset):
+        # Grab the active trips only
+        trips = Trip.objects.filter(from_date__gte=datetime.date.today())
+        response = TemplateResponse(
+            request, "invite_on_trip.html", {"players": queryset, "trips": trips},
+        )
+        return response
 
 
 admin.site.register(Player, PlayerAdmin)

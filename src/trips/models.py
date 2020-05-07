@@ -1,6 +1,9 @@
 from django.db import models
+from django.utils import timezone
 
 from decimal import Decimal
+
+from datetime import timedelta
 
 from ckeditor.fields import RichTextField
 
@@ -30,7 +33,7 @@ class Trip(BaseModel):
     traveler_price = models.DecimalField(max_digits=7, decimal_places=2)
     package_options = models.ManyToManyField("trips.Package")
     email_template = RichTextField(blank=True, null=True)
-    email_files = models.ManyToManyField("trips.TripDocument")
+    email_files = models.ManyToManyField("trips.TripDocument", blank=True)
 
     def __str__(self):
         return "{} from {} to {}".format(self.name, self.from_date, self.to_date)
@@ -93,3 +96,7 @@ class TripInvitation(BaseModel):
         return "Trip: {} for player {} with status {}".format(
             self.trip, self.player, self.status
         )
+
+    @property
+    def is_valid(self):
+        return self.created + timedelta(days=10) < timezone.now()

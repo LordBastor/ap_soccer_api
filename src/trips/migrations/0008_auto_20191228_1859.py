@@ -7,27 +7,52 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trips', '0007_auto_20191218_1636'),
+        ("trips", "0007_auto_20191218_1636"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tripinvitation',
-            name='total_amount_due',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True),
+            model_name="tripinvitation",
+            name="total_amount_due",
+            field=models.DecimalField(
+                blank=True, decimal_places=2, max_digits=7, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='tripinvitation',
-            name='status',
-            field=models.CharField(choices=[('Invite Sent', 'Invite Sent'), ('Invoice Sent', 'Invoice Sent'), ('Started', 'Started'), ('Deposit Paid', 'Deposit Paid'), ('Paid', 'Paid')], default='Invite Sent', max_length=12),
+            model_name="tripinvitation",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Invite Sent", "Invite Sent"),
+                    ("Invoice Sent", "Invoice Sent"),
+                    ("Started", "Started"),
+                    ("Deposit Paid", "Deposit Paid"),
+                    ("Paid", "Paid"),
+                ],
+                default="Invite Sent",
+                max_length=12,
+            ),
         ),
         migrations.CreateModel(
-            name='TripCompanion',
+            name="TripCompanion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
-                ('role', models.CharField(max_length=30)),
-                ('package', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='trips.Package')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=30)),
+                ("role", models.CharField(max_length=30)),
+                (
+                    "package",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="trips.Package"
+                    ),
+                ),
             ],
         ),
     ]

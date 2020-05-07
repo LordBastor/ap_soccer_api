@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trips', '0002_trip_tripinvitation'),
+        ("trips", "0002_trip_tripinvitation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='trip',
-            name='deposit_amount',
-            field=models.DecimalField(decimal_places=2, default=Decimal('500'), max_digits=7),
+            model_name="trip",
+            name="deposit_amount",
+            field=models.DecimalField(
+                decimal_places=2, default=Decimal("500"), max_digits=7
+            ),
         ),
     ]

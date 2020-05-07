@@ -7,18 +7,25 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Payment',
+            name="Payment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('invoice_number', models.CharField(max_length=255)),
-                ('invoice_url', models.CharField(max_length=255)),
-                ('amount_due', models.DecimalField(decimal_places=2, max_digits=12)),
-                ('amount_paid', models.DecimalField(decimal_places=2, max_digits=12)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("invoice_number", models.CharField(max_length=255)),
+                ("invoice_url", models.CharField(max_length=255)),
+                ("amount_due", models.DecimalField(decimal_places=2, max_digits=12)),
+                ("amount_paid", models.DecimalField(decimal_places=2, max_digits=12)),
             ],
         ),
     ]

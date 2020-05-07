@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div id="content" class="col delete-confirmation">
+    <form method="post" action="/players/invite_to_trip/">
+        {% csrf_token %}
+        <div>
+            <div>Please specify the trip you wish to invite these players on and make sure the player list is correct</div>
+            </br>
+            <div class="form-row field-position">
+                <div>
+                    <label for="id_trip">Trip:</label>
+                    <select name="trip_id" id="id_trip">
+                        <option value="" selected>---------</option>
+                        {% for trip in trips %}
+                            <option value={{trip.id}}>{{trip.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            </br>
+
+            {% for player in players %}
+                <input type="hidden" name="player_ids" value="{{ player.pk }}" />
+                <ul>
+                    <li>
+                        {{player.first_name}} | {{player.last_name}} | {{player.position}} | {{player.id_clinic}} |     {{player.date_of_birth}}
+                    </li>
+                </ul>
+            {% endfor %}
+        </div>
+        <input type="submit" value="Invite Players">
+        <a href="/admin/players/player/" class="button cancel-link">Go Back</a>
+    </form>    
+    <br class="clear">
+    <div id="footer"></div>
+</div>
+{% endblock %}

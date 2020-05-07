@@ -8,39 +8,58 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('players', '0001_initial'),
-        ('payments', '0001_initial'),
-        ('trips', '0005_auto_20191218_1414'),
+        ("players", "0001_initial"),
+        ("payments", "0001_initial"),
+        ("trips", "0005_auto_20191218_1414"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tripinvitation',
-            name='payment',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.PROTECT, to='payments.Payment'),
+            model_name="tripinvitation",
+            name="payment",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="payments.Payment",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tripinvitation',
-            name='player',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.PROTECT, to='players.Player'),
+            model_name="tripinvitation",
+            name="player",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="players.Player",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tripinvitation',
-            name='status',
-            field=models.CharField(choices=[('Sent', 'Sent'), ('Started', 'Started'), ('Deposit Paid', 'Deposit Paid'), ('Paid', 'Paid')], default=1, max_length=6),
+            model_name="tripinvitation",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("Sent", "Sent"),
+                    ("Started", "Started"),
+                    ("Deposit Paid", "Deposit Paid"),
+                    ("Paid", "Paid"),
+                ],
+                default=1,
+                max_length=6,
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tripinvitation',
-            name='trip',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.PROTECT, to='trips.Trip'),
+            model_name="tripinvitation",
+            name="trip",
+            field=models.ForeignKey(
+                default=1, on_delete=django.db.models.deletion.PROTECT, to="trips.Trip"
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tripinvitation',
-            name='uid',
+            model_name="tripinvitation",
+            name="uid",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
     ]

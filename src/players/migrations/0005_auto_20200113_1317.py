@@ -6,63 +6,80 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('players', '0004_player_id_clinic'),
+        ("players", "0004_player_id_clinic"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='player',
-            name='address',
+            model_name="player",
+            name="address",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='city',
+            model_name="player",
+            name="city",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='country',
-            field=models.CharField(blank=True, default='United States', max_length=255, null=True),
+            model_name="player",
+            name="country",
+            field=models.CharField(
+                blank=True, default="United States", max_length=255, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='emergency_contact',
+            model_name="player",
+            name="emergency_contact",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='gender',
-            field=models.CharField(blank=True, choices=[('Male', 'Male'), ('Female', 'Female')], max_length=6, null=True),
+            model_name="player",
+            name="gender",
+            field=models.CharField(
+                blank=True,
+                choices=[("Male", "Male"), ("Female", "Female")],
+                max_length=6,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='medical_conditions',
+            model_name="player",
+            name="medical_conditions",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='parent_name',
+            model_name="player",
+            name="parent_name",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='phone',
+            model_name="player",
+            name="phone",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='position',
-            field=models.CharField(blank=True, choices=[('Goalkeeper', 'Goalkeeper'), ('Defense', 'Defense'), ('Midfield', 'Midfield'), ('Forward', 'Forward')], max_length=10, null=True),
+            model_name="player",
+            name="position",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("Goalkeeper", "Goalkeeper"),
+                    ("Defense", "Defense"),
+                    ("Midfield", "Midfield"),
+                    ("Forward", "Forward"),
+                ],
+                max_length=10,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='state',
+            model_name="player",
+            name="state",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='zip_code',
+            model_name="player",
+            name="zip_code",
             field=models.CharField(blank=True, max_length=255, null=True),
         ),
     ]
