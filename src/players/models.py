@@ -2,24 +2,25 @@ from django.db import models
 
 
 class Player(models.Model):
-    GOALKEEPER = "Goalkeeper"
-    DEFENSE = "Defense"
-    MIDFIELD = "Midfield"
-    FORWARD = "Forward"
+    GOALKEEPER = "goalkeeper"
+    DEFENSE = "defense"
+    MIDFIELD = "midfield"
+    FORWARD = "forward"
     POSITION_CHOICES = (
-        (GOALKEEPER, "Goalkeeper"),
-        (DEFENSE, "Defense"),
-        (MIDFIELD, "Midfield"),
-        (FORWARD, "Forward"),
+        (GOALKEEPER, "goalkeeper"),
+        (DEFENSE, "defense"),
+        (MIDFIELD, "midfield"),
+        (FORWARD, "forward"),
     )
 
-    MALE = "Male"
-    FEMALE = "Female"
-    GENDER_CHOICES = ((MALE, "Male"), (FEMALE, "Female"))
+    MALE = "male"
+    FEMALE = "female"
+    GENDER_CHOICES = ((MALE, "male"), (FEMALE, "female"))
 
     first_name = models.CharField(max_length=255, null=True, blank=True)
     last_name = models.CharField(max_length=255, null=True, blank=True)
-    parent_name = models.CharField(max_length=255, null=True, blank=True)
+    parent_first_name = models.CharField(max_length=255, null=True, blank=True)
+    parent_last_name = models.CharField(max_length=255, null=True, blank=True)
     position = models.CharField(
         max_length=10, choices=POSITION_CHOICES, null=True, blank=True
     )
