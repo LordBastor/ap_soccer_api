@@ -51,6 +51,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "import_export",
     "ckeditor",
+    "django_extensions",
 ]
 
 PROJECT_APPS = ["payments", "players", "trips", "users"]
@@ -66,6 +67,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.contrib.postgres",
 ]
 
 ROOT_URLCONF = "app.urls"
@@ -156,9 +158,7 @@ else:
 # Django Rest Framework Settings
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny",],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",

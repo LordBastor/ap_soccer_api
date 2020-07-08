@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.postgres.fields import JSONField
 
 from decimal import Decimal
 
@@ -81,14 +82,11 @@ class TripInvitation(BaseModel):
         "payments.Payment", on_delete=models.PROTECT, blank=True, null=True
     )
 
-    # If applicable - we can add more players to an invite
-    additional_players = models.ManyToManyField(
-        "players.Player", related_name="additional_players", blank=True
-    )
-    companions = models.ManyToManyField("trips.TripCompanion", blank=True)
     total_amount_due = models.DecimalField(
         max_digits=7, decimal_places=2, blank=True, null=True
     )
+
+    form_information = JSONField(default=dict)
 
     # TODO: Calculate total amount post_save
 
