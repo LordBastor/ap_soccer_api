@@ -45,6 +45,14 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "total_amount_due",
             "form_information",
         ]
+        read_only_fields = [
+            "uid",
+            "status",
+            "player",
+            "trip",
+            "payment",
+            "total_amount_due",
+        ]
 
     player = PlayerSerializer()
     trip = TripSerializer()
