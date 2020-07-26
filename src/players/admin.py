@@ -47,7 +47,7 @@ class PlayerAdmin(ImportExportModelAdmin):
         "state",
         "id_clinic",
     )
-    search_fields = ("name",)
+    search_fields = ("first_name", "last_name", "id_clinic")
     list_filter = ("position", "id_clinic")
 
     actions = ["invite_on_trip"]
