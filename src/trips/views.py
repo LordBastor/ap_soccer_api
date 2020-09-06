@@ -41,7 +41,7 @@ class TripInvitationView(APIView):
         ]
 
         # We should block attempts to "decrement" status
-        if list.index(future_status) < list.index(current_status):
+        if status_order.index(future_status) < status_order.index(current_status):
             data.status = current_status
 
         if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
