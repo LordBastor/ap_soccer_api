@@ -47,7 +47,6 @@ class TripInvitationSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             "uid",
-            "status",
             "player",
             "trip",
             "payment",
