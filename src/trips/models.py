@@ -58,15 +58,21 @@ class TripDocument(BaseModel):
 
 class TripInvitation(BaseModel):
     INVITE_SENT = "Invite Sent"
-    INVOICE_SENT = "Invoice Sent"
     STARTED = "Started"
+    PLAYER_DATA_FILLED = "Player Data Filled"
+    COMPANION_DATA_FILLED = "Companion Data Filled"
+    TERMS_AGREED = "Terms Agreed"
+    INVOICE_SENT = "Invoice Sent"
     DEPOSIT_PAID = "Deposit Paid"
     PAID = "Paid"
 
     STATUS_CHOICES = (
         (INVITE_SENT, INVITE_SENT),
-        (INVOICE_SENT, INVOICE_SENT),
         (STARTED, STARTED),
+        (PLAYER_DATA_FILLED, PLAYER_DATA_FILLED),
+        (COMPANION_DATA_FILLED, COMPANION_DATA_FILLED),
+        (TERMS_AGREED, TERMS_AGREED),
+        (INVOICE_SENT, INVOICE_SENT),
         (DEPOSIT_PAID, DEPOSIT_PAID),
         (PAID, PAID),
     )
