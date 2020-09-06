@@ -27,7 +27,7 @@ class TripInvitationView(APIView):
 
         # Let's ensure no one is pushing wrong statuses or status is being pushed back
         current_status = trip_invitation.status
-        future_status = data.status
+        future_status = data["status"]
 
         status_order = [
             TripInvitation.INVITE_SENT,
@@ -42,7 +42,7 @@ class TripInvitationView(APIView):
 
         # We should block attempts to "decrement" status
         if status_order.index(future_status) < status_order.index(current_status):
-            data.status = current_status
+            data["status"] = current_status
 
         if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
             return Response(

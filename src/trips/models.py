@@ -80,7 +80,7 @@ class TripInvitation(BaseModel):
     # Relations and status
     uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     status = models.CharField(
-        max_length=12, choices=STATUS_CHOICES, default=INVITE_SENT
+        max_length=30, choices=STATUS_CHOICES, default=INVITE_SENT
     )
     player = models.ForeignKey("players.Player", on_delete=models.PROTECT)
     trip = models.ForeignKey("trips.Trip", on_delete=models.PROTECT)
