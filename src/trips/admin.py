@@ -55,6 +55,7 @@ admin.site.register(Trip, TripAdmin)
 
 class TripInvitationAdmin(admin.ModelAdmin):
     list_display = (
+        "uid",
         "player",
         "trip",
         "status",
@@ -62,7 +63,13 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "created_date",
         "form_information",
     )
-    readonly_fields = ("status", "total_amount_due", "payment", "form_information")
+    readonly_fields = (
+        "uid",
+        "status",
+        "total_amount_due",
+        "payment",
+        "form_information",
+    )
     list_filter = ("status",)
     can_delete = False
     can_add_related = False
