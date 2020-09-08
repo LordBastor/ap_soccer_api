@@ -55,13 +55,13 @@ admin.site.register(Trip, TripAdmin)
 
 class TripInvitationAdmin(admin.ModelAdmin):
     list_display = (
-        "uid",
         "player",
         "trip",
         "status",
         "get_paid_total",
         "created_date",
         "form_information",
+        "uid",
     )
     readonly_fields = (
         "uid",
