@@ -28,6 +28,7 @@ class TripSerializer(serializers.ModelSerializer):
             "player_price",
             "traveler_price",
             "package_options",
+            "is_valid",
         ]
 
     package_options = PackageSerializer(many=True)

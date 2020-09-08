@@ -13,6 +13,16 @@ from app.model_utils import BaseModel
 import uuid
 
 
+class TripTerms(BaseModel):
+    terms_and_conditions = models.TextField()
+
+    class Meta:
+        verbose_name_plural = "trip terms"
+
+    def __str__(self):
+        return "Terms Created On: {}".format(self.created_date)
+
+
 class Package(BaseModel):
     name = models.CharField(max_length=30)
     price = models.DecimalField(max_digits=7, decimal_places=2)
@@ -103,4 +113,4 @@ class TripInvitation(BaseModel):
 
     @property
     def is_valid(self):
-        return self.created + timedelta(days=10) < timezone.now()
+        return self.created_date + timedelta(days=10) < timezone.now()
