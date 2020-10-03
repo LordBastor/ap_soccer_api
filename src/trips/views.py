@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.http import Http404
 from rest_framework.views import APIView
 
@@ -6,6 +8,8 @@ from rest_framework import status
 
 from trips.models import TripInvitation, TripTerms
 from trips.serializers import TripInvitationSerializer, TripTermSerializer
+
+from payments.models import Payment
 
 
 class TripInvitationView(APIView):
@@ -46,6 +50,41 @@ class TripInvitationView(APIView):
             # We should block attempts to "decrement" status
             if status_order.index(future_status) < status_order.index(current_status):
                 data["status"] = current_status
+
+            if future_status == TripInvitation.COMPANION_DATA_FILLED:
+                trip = trip_invitation.trip
+
+                # Initial values from trip
+                deposit_amount = trip.deposit_amount
+                player_price = trip.player_price
+                traveler_price = trip.traveler_price
+
+                # Deposit and Amount due
+                amount_due = player_price
+                amount_deposit = deposit_amount
+
+                companion_data = data["form_information"]["companions"]
+
+                if "players" in companion_data and companion_data["players"]:
+                    amount_due += player_price * len(companion_data["players"])
+                    amount_deposit += deposit_amount * len(companion_data["players"])
+
+                if "companions" in companion_data and companion_data["companions"]:
+                    for companion in companion_data["companions"]:
+                        amount_due += traveler_price
+                        amount_deposit += deposit_amount
+
+                        if "price" in companion and companion["price"]:
+                            amount_due += Decimal(companion["price"])
+
+                payment = Payment.objects.create(
+                    amount_paid=Decimal(0),
+                    amount_due=amount_due,
+                    amount_deposit=amount_deposit,
+                )
+
+                data["payment"] = payment.id
+                data["total_amount_due"] = amount_due
 
             if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
                 return Response(

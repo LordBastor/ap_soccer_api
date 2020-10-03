@@ -11,4 +11,5 @@ class PaymentSerializer(serializers.ModelSerializer):
             "invoice_url",
             "amount_due",
             "amount_paid",
+            "amount_deposit",
         ]
