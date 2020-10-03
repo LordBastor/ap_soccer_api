@@ -30,18 +30,12 @@ class TripSerializer(serializers.ModelSerializer):
             "player_price",
             "traveler_price",
             "package_options",
-            "is_valid",
         ]
 
     package_options = PackageSerializer(many=True)
 
 
 class TripInvitationSerializer(serializers.ModelSerializer):
-    player = PlayerSerializer()
-    trip = TripSerializer()
-    payment = PaymentSerializer()
-    terms_signature = Base64ImageField()
-
     class Meta:
         model = TripInvitation
         fields = [
@@ -52,7 +46,9 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "payment",
             "total_amount_due",
             "form_information",
+            "terms",
             "terms_signature",
+            "is_valid",
         ]
 
         read_only_fields = [
@@ -61,7 +57,13 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "trip",
             "payment",
             "total_amount_due",
+            "is_valid",
         ]
+
+    player = PlayerSerializer()
+    trip = TripSerializer()
+    payment = PaymentSerializer()
+    terms_signature = Base64ImageField()
 
 
 class TripTermSerializer(serializers.ModelSerializer):

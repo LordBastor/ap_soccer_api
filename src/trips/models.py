@@ -104,6 +104,9 @@ class TripInvitation(BaseModel):
 
     form_information = JSONField(default=dict)
 
+    terms = models.ForeignKey(
+        "trips.TripTerms", on_delete=models.PROTECT, blank=True, null=True
+    )
     terms_signature = models.ImageField(upload_to="images/", blank=True, null=True)
 
     def __str__(self):
