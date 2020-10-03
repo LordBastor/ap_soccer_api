@@ -52,7 +52,7 @@ def generate_invoice_for_trip_invite(trip_invite):
         additional_players_price=str(additional_players_price),
     )
 
-    client.send_invoice(draft["href"][-1])
+    client.send_invoice(draft["href"].split("/")[-1])
 
 
 class PayPalClient:
