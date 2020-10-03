@@ -31,6 +31,8 @@ class TripInvitationView(APIView):
 
         data = request.data
 
+        payment = None
+
         # Let's ensure no one is pushing wrong statuses or status is being pushed back
         if "status" in data and data["status"]:
             current_status = trip_invitation.status
@@ -74,7 +76,7 @@ class TripInvitationView(APIView):
                         amount_due += traveler_price
                         amount_deposit += deposit_amount
 
-                        if "price" in companion and companion["price"]:
+                        if "additional_price" in companion and companion["price"]:
                             amount_due += Decimal(companion["price"])
 
                 payment = Payment.objects.create(
@@ -83,7 +85,6 @@ class TripInvitationView(APIView):
                     amount_deposit=amount_deposit,
                 )
 
-                data["payment"] = payment.id
                 data["total_amount_due"] = amount_due
 
             if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
@@ -97,7 +98,13 @@ class TripInvitationView(APIView):
         serializer = TripInvitationSerializer(trip_invitation, data=data, partial=True)
 
         if serializer.is_valid():
-            serializer.save()
+            trip_invite = serializer.save()
+
+            # Add payment if relevant
+            if payment:
+                trip_invite.payment = payment
+                trip_invite.save()
+
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
