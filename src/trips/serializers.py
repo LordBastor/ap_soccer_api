@@ -3,7 +3,7 @@ from rest_framework import serializers
 from players.serializers import PlayerSerializer
 from payments.serializer import PaymentSerializer
 
-from trips.models import TripInvitation, Trip, Package
+from trips.models import TripInvitation, Trip, Package, TripTerms
 
 
 class PackageSerializer(serializers.ModelSerializer):
@@ -57,3 +57,9 @@ class TripInvitationSerializer(serializers.ModelSerializer):
     player = PlayerSerializer()
     trip = TripSerializer()
     payment = PaymentSerializer()
+
+
+class TripTermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TripTerms
+        fields = "__all__"

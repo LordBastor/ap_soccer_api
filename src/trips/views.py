@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from trips.models import TripInvitation
-from trips.serializers import TripInvitationSerializer
+from trips.models import TripInvitation, TripTerms
+from trips.serializers import TripInvitationSerializer, TripTermSerializer
 
 
 class TripInvitationView(APIView):
@@ -57,3 +57,14 @@ class TripInvitationView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TripTermsView(APIView):
+    def get(self, request):
+        # Always return the latest trips
+
+        terms = TripTerms.objects.latest("id")
+
+        serializer = TripTermSerializer(terms)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
