@@ -26,3 +26,6 @@ django-ckeditor==5.9.0
 
 # Django Extra Fields - used for image serializer
 django-extra-fields
+
+# Pillow
+Pillow==7.0.0
