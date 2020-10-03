@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from drf_extra_fields.fields import Base64ImageField
+
 from players.serializers import PlayerSerializer
 from payments.serializer import PaymentSerializer
 
@@ -35,6 +37,11 @@ class TripSerializer(serializers.ModelSerializer):
 
 
 class TripInvitationSerializer(serializers.ModelSerializer):
+    player = PlayerSerializer()
+    trip = TripSerializer()
+    payment = PaymentSerializer()
+    terms_signature = Base64ImageField()
+
     class Meta:
         model = TripInvitation
         fields = [
@@ -45,7 +52,9 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "payment",
             "total_amount_due",
             "form_information",
+            "terms_signature",
         ]
+
         read_only_fields = [
             "uid",
             "player",
@@ -53,10 +62,6 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "payment",
             "total_amount_due",
         ]
-
-    player = PlayerSerializer()
-    trip = TripSerializer()
-    payment = PaymentSerializer()
 
 
 class TripTermSerializer(serializers.ModelSerializer):
