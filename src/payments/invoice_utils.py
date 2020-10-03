@@ -170,7 +170,7 @@ class PayPalClient:
                 ],
                 "website": "https://americanpremiersoccer.com",
                 "tax_id": "45-4532237",
-                "logo_url": "https://pics.paypal.com/00/s/NzE0WDE2MDA=/z/iTUAAOSwFTRTog2G/$_109.GIF",
+                "logo_url": "https://americanpremiersoccer.com/wp-content/uploads/2020/01/APS-Transparent-Final-Small-Resised-2.png",
             },
             "primary_recipients": [
                 {
