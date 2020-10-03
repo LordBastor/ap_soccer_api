@@ -22,7 +22,6 @@ class TripInvitationView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, uid):
-        # TODO: Calculate total amount when step is PLAYER_DATA_FILLED
         # TODO: Setup invoice when status is TERMS_AGREED
         try:
             trip_invitation = TripInvitation.objects.get(uid=uid)
@@ -53,6 +52,7 @@ class TripInvitationView(APIView):
             if status_order.index(future_status) < status_order.index(current_status):
                 data["status"] = current_status
 
+            # If Companion data has been filled - let's calculate the payment
             if future_status == TripInvitation.COMPANION_DATA_FILLED:
                 trip = trip_invitation.trip
 
@@ -76,8 +76,11 @@ class TripInvitationView(APIView):
                         amount_due += traveler_price
                         amount_deposit += deposit_amount
 
-                        if "additional_price" in companion and companion["price"]:
-                            amount_due += Decimal(companion["price"])
+                        if (
+                            "additional_price" in companion
+                            and companion["additional_price"]
+                        ):
+                            amount_due += Decimal(companion["additional_price"])
 
                 payment = Payment.objects.create(
                     amount_paid=Decimal(0),
@@ -86,6 +89,10 @@ class TripInvitationView(APIView):
                 )
 
                 data["total_amount_due"] = amount_due
+
+            # If the terms have been agreed - let us generate the invoice
+            if future_status == TripInvitation.TERMS_AGREED:
+                pass
 
             if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
                 return Response(

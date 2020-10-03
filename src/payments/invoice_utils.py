@@ -1,9 +1,58 @@
+from decimal import Decimal
+
 import datetime
 import json
 
 from django.conf import settings
 
 import requests
+
+
+def generate_invoice_for_trip_invite(trip_invite):
+    client = PayPalClient()
+
+    invoice_number = client.generate_invoice_number()
+
+    player = trip_invite.form_information["player"]
+    companions = trip_invite.form_information["companions"]
+
+    # Calculate traveler price
+    additional_travelers_quantity = len(companions["companions"])
+    additional_travelers_price = Decimal(0)
+
+    traveler_base_price = trip_invite.trip.traveler_price
+
+    for companion in companions["companions"]:
+        additional_travelers_price += traveler_base_price
+
+        if "additional_price" in companion and companion["additional_price"]:
+            additional_travelers_price += Decimal(companion["additional_price"])
+
+    # Calculate player price
+    additional_players_quantity = len(companions["players"])
+    additional_players_price = trip_invite.trip.player_price * len(
+        companions["players"]
+    )
+
+    draft = client.create_invoice_draft(
+        invoice_number=invoice_number,
+        recipient_given_name=player["parent_first_name"],
+        recipient_surname=player["parent_last_name"],
+        recipient_phone=player["phone"],
+        recipient_email=player["email"],
+        recipient_address=player["address"],
+        trip_name=trip_invite.trip.name,
+        trip_date=trip_invite.trip.from_date,
+        trip_description=trip_invite.trip.name,
+        trip_price=str(trip_invite.trip.player_price),
+        amount_deposit=str(trip_invite.payment.amount_deposit),
+        additional_travelers_quantity=str(additional_travelers_quantity),
+        additional_travelers_price=str(additional_travelers_price),
+        additional_players_quantity=str(additional_players_quantity),
+        additional_players_price=str(additional_players_price),
+    )
+
+    client.send_invoice(draft["href"][-1])
 
 
 class PayPalClient:
@@ -63,14 +112,13 @@ class PayPalClient:
         trip_date,
         trip_description,
         trip_price,
-        trip_deposit,
-        trip_quantity,
+        amount_deposit,
         additional_travelers_quantity,
-        additional_traveler_price,
+        additional_travelers_price,
+        additional_players_quantity,
+        additional_players_price,
     ):
         url = "{}/v2/invoicing/invoices".format(self.root_url)
-
-        trip_deposit = trip_deposit * (trip_quantity + additional_travelers_quantity)
 
         today = datetime.datetime.today()
 
@@ -99,7 +147,7 @@ class PayPalClient:
                 ).format(due_date.strftime("%B %d, %Y")),
                 "payment_term": {
                     "term_type": "DUE_ON_DATE_SPECIFIED",
-                    "due_date": str(due_date.date()),
+                    "due_date": str(due_date),
                 },
             },
             "invoicer": {  # Fill out invoicer info
@@ -120,7 +168,7 @@ class PayPalClient:
                         "phone_type": "MOBILE",
                     }
                 ],
-                "website": "https://gflsoccer.com",
+                "website": "https://americanpremiersoccer.com",
                 "tax_id": "45-4532237",
                 "logo_url": "https://pics.paypal.com/00/s/NzE0WDE2MDA=/z/iTUAAOSwFTRTog2G/$_109.GIF",
             },
@@ -153,7 +201,7 @@ class PayPalClient:
                 {
                     "name": trip_name,
                     "description": trip_description,
-                    "quantity": trip_quantity,
+                    "quantity": "1",
                     "unit_amount": {"currency_code": "USD", "value": trip_price},
                     "unit_of_measure": "QUANTITY",
                 },
@@ -162,7 +210,16 @@ class PayPalClient:
                     "quantity": additional_travelers_quantity,
                     "unit_amount": {
                         "currency_code": "USD",
-                        "value": additional_traveler_price,
+                        "value": additional_travelers_price,
+                    },
+                    "unit_of_measure": "QUANTITY",
+                },
+                {
+                    "name": "Additional Players for {}".format(trip_name),
+                    "quantity": additional_players_quantity,
+                    "unit_amount": {
+                        "currency_code": "USD",
+                        "value": additional_players_price,
                     },
                     "unit_of_measure": "QUANTITY",
                 },
@@ -172,7 +229,7 @@ class PayPalClient:
                     "allow_partial_payment": True,
                     "minimum_amount_due": {
                         "currency_code": "USD",
-                        "value": str(trip_deposit),
+                        "value": str(amount_deposit),
                     },
                 },
                 "allow_tip": False,
@@ -183,7 +240,7 @@ class PayPalClient:
 
         response = self.session.post(url, data=json.dumps(data))
 
-        return response.json()["href"]
+        return response.json()
 
 
 # Additional items - managed by admin
