@@ -12,7 +12,7 @@ def send_player_invite(name, email, uid, trip_name, trip_template, attachments):
 
     html_message = html_message.replace("{{player_name}}", name)
     html_message = html_message.replace(
-        "{{invitation_link}}", "https://example.com/{}".format(uid)
+        "{{invitation_link}}", "{}?uid={}".format(settings.APP_URL, uid),
     )
 
     invitation_email = EmailMultiAlternatives(

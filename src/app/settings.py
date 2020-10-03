@@ -178,3 +178,7 @@ PAYPAL_MODE = env("PAYPAL_MODE")
 PAYPAL_ACCOUNT = env("PAYPAL_ACCOUNT")
 PAYPAL_CLIENT_ID = env("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET = env("PAYPAL_SECRET")
+
+
+# URL where the front-end app is hosted
+APP_URL = "http://localhost:3000/"
