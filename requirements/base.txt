@@ -29,3 +29,6 @@ django-extra-fields
 
 # Pillow
 Pillow==7.0.0
+
+# Requests
+requests==2.24.0
