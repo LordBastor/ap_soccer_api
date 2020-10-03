@@ -50,15 +50,6 @@ class Trip(BaseModel):
         return "{} from {} to {}".format(self.name, self.from_date, self.to_date)
 
 
-class TripCompanion(BaseModel):
-    package = models.ForeignKey("trips.Package", on_delete=models.PROTECT)
-    name = models.CharField(max_length=30)
-    role = models.CharField(max_length=30)
-
-    def __str__(self):
-        return "{} - {}".format(self.name, self.role)
-
-
 class TripDocument(BaseModel):
     document = models.FileField(upload_to="documents/")
 

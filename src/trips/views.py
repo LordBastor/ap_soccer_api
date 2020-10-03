@@ -10,6 +10,7 @@ from trips.models import TripInvitation, TripTerms
 from trips.serializers import TripInvitationSerializer, TripTermSerializer
 
 from payments.models import Payment
+from payments.invoice_utils import generate_invoice_for_trip_invite
 
 
 class TripInvitationView(APIView):
@@ -90,10 +91,6 @@ class TripInvitationView(APIView):
 
                 data["total_amount_due"] = amount_due
 
-            # If the terms have been agreed - let us generate the invoice
-            if future_status == TripInvitation.TERMS_AGREED:
-                pass
-
             if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
                 return Response(
                     {
@@ -111,6 +108,10 @@ class TripInvitationView(APIView):
             if payment:
                 trip_invite.payment = payment
                 trip_invite.save()
+
+            # If the terms have been agreed - let us generate the invoice
+            if future_status == TripInvitation.TERMS_AGREED:
+                generate_invoice_for_trip_invite(trip_invite)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 

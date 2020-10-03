@@ -7,14 +7,12 @@ from .models import (
     Package,
     Trip,
     TripInvitation,
-    TripCompanion,
     TripDocument,
     TripTerms,
 )
 
 
 admin.site.register(TripDocument)
-admin.site.register(TripCompanion)
 
 
 class PackageAdmin(admin.ModelAdmin):
