@@ -28,29 +28,32 @@ class TripInvitationView(APIView):
         data = request.data
 
         # Let's ensure no one is pushing wrong statuses or status is being pushed back
-        current_status = trip_invitation.status
-        future_status = data["status"]
+        if "status" in data and data["status"]:
+            current_status = trip_invitation.status
+            future_status = data["status"]
 
-        status_order = [
-            TripInvitation.INVITE_SENT,
-            TripInvitation.STARTED,
-            TripInvitation.PLAYER_DATA_FILLED,
-            TripInvitation.COMPANION_DATA_FILLED,
-            TripInvitation.TERMS_AGREED,
-            TripInvitation.INVOICE_SENT,
-            TripInvitation.DEPOSIT_PAID,
-            TripInvitation.PAID,
-        ]
+            status_order = [
+                TripInvitation.INVITE_SENT,
+                TripInvitation.STARTED,
+                TripInvitation.PLAYER_DATA_FILLED,
+                TripInvitation.COMPANION_DATA_FILLED,
+                TripInvitation.TERMS_AGREED,
+                TripInvitation.INVOICE_SENT,
+                TripInvitation.DEPOSIT_PAID,
+                TripInvitation.PAID,
+            ]
 
-        # We should block attempts to "decrement" status
-        if status_order.index(future_status) < status_order.index(current_status):
-            data["status"] = current_status
+            # We should block attempts to "decrement" status
+            if status_order.index(future_status) < status_order.index(current_status):
+                data["status"] = current_status
 
-        if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
-            return Response(
-                {"error": "Don't be cheeky, you can't push these statuses manually"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
+                return Response(
+                    {
+                        "error": "Don't be cheeky, you can't push these statuses manually"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         serializer = TripInvitationSerializer(trip_invitation, data=data, partial=True)
 

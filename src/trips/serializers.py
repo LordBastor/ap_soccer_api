@@ -36,6 +36,11 @@ class TripSerializer(serializers.ModelSerializer):
 
 
 class TripInvitationSerializer(serializers.ModelSerializer):
+    player = PlayerSerializer()
+    trip = TripSerializer()
+    payment = PaymentSerializer()
+    terms_signature = Base64ImageField()
+
     class Meta:
         model = TripInvitation
         fields = [
@@ -59,11 +64,6 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "total_amount_due",
             "is_valid",
         ]
-
-    player = PlayerSerializer()
-    trip = TripSerializer()
-    payment = PaymentSerializer()
-    terms_signature = Base64ImageField()
 
 
 class TripTermSerializer(serializers.ModelSerializer):
