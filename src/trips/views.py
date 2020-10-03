@@ -18,6 +18,8 @@ class TripInvitationView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, uid):
+        # TODO: Calculate total amount when step is PLAYER_DATA_FILLED
+        # TODO: Setup invoice when status is TERMS_AGREED
         try:
             trip_invitation = TripInvitation.objects.get(uid=uid)
         except TripInvitation.DoesNotExist:

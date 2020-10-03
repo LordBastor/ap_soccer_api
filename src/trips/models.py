@@ -104,7 +104,7 @@ class TripInvitation(BaseModel):
 
     form_information = JSONField(default=dict)
 
-    # TODO: Calculate total amount post_save
+    terms_signature = models.ImageField(upload_to="images/", blank=True, null=True)
 
     def __str__(self):
         return "Trip: {} for player {} with status {}".format(
