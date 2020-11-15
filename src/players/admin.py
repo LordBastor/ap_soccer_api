@@ -56,8 +56,12 @@ class PlayerAdmin(ImportExportModelAdmin):
     def invite_on_trip(modeladmin, request, queryset):
         # Grab the active trips only
         trips = Trip.objects.filter(from_date__gte=datetime.date.today())
+
+        player_ids = [str(_id) for _id in queryset.values_list("id", flat=True)]
         response = TemplateResponse(
-            request, "invite_on_trip.html", {"players": queryset, "trips": trips},
+            request,
+            "invite_on_trip.html",
+            {"players": queryset, "trips": trips, "player_ids": ",".join(player_ids)},
         )
         return response
 

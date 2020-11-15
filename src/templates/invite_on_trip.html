@@ -19,8 +19,8 @@
             </div>
             </br>
 
+            <input type="hidden" name="player_ids" value="{{ player_ids }}" />
             {% for player in players %}
-                <input type="hidden" name="player_ids" value="{{ player.pk }}" />
                 <ul>
                     <li>
                         {{player.first_name}} | {{player.last_name}} | {{player.position}} | {{player.id_clinic}} |     {{player.date_of_birth}}

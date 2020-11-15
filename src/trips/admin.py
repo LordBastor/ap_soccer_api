@@ -87,7 +87,7 @@ class TripInvitationAdmin(admin.ModelAdmin):
             "<a href='{url}' target='blank'>{url}</a>", url=obj.invoice_link
         )
 
-    invoice_link.short_description = "Firm URL"
+    invoice_link.short_description = "PayPal Invoice URL"
 
 
 admin.site.register(TripInvitation, TripInvitationAdmin)

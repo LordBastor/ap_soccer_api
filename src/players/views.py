@@ -10,7 +10,7 @@ from players.utils import send_player_invite
 
 def invite_to_trip(request, *args, **kwargs):
     trip_id = request.POST.get("trip_id", None)
-    player_ids = request.POST.getlist("player_ids", None)
+    player_ids = request.POST.get("player_ids", None)
 
     if not trip_id or not player_ids:
         messages.add_message(
@@ -25,6 +25,8 @@ def invite_to_trip(request, *args, **kwargs):
             request, messages.ERROR, "Specified Trip not found",
         )
         return HttpResponseRedirect(reverse("admin:players_player_changelist"))
+
+    player_ids = player_ids.split(",")
 
     players = Player.objects.filter(id__in=player_ids)
 
