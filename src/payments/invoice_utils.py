@@ -56,7 +56,7 @@ def generate_invoice_for_trip_invite(trip_invite):
 
     client.send_invoice(invoice_id)
 
-    trip_invite.payment.invoice_id = invoice_id
+    trip_invite.payment.invoice_number = invoice_id
     # Build invoice url and save it so we can expose it in next trip step
     paypal_url = (
         "https://www.sandbox.paypal.com/invoice/p/#"
@@ -110,6 +110,19 @@ class PayPalClient:
             "send_to_invoicer": True,
             # "additional_recipients": [],
         }
+        response = self.session.post(url, data=json.dumps(data))
+
+        return response
+
+    def add_payment_to_invoice(self, invoice_id, method, amount, note=""):
+        url = "{}/v2/invoicing/invoices/{}/payments".format(self.root_url, invoice_id)
+        data = {
+            "payment_date": datetime.date.today().strftime("%Y-%m-%d"),
+            "method": method,
+            "note": note,
+            "amount": {"currency_code": "USD", "value": amount},
+        }
+
         response = self.session.post(url, data=json.dumps(data))
 
         return response
