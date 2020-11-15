@@ -54,6 +54,7 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "terms",
             "terms_signature",
             "is_valid",
+            "invoice_link",
         ]
 
         read_only_fields = [
@@ -63,6 +64,7 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "payment",
             "total_amount_due",
             "is_valid",
+            "invoice_link",
         ]
 
 

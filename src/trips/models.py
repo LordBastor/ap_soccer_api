@@ -108,3 +108,9 @@ class TripInvitation(BaseModel):
     @property
     def is_valid(self):
         return self.created_date + timedelta(days=10) < timezone.now()
+
+    @property
+    def invoice_link(self):
+        if self.payment and self.payment.invoice_url:
+            return self.payment.invoice_url
+        return "Not submitted"

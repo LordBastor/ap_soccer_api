@@ -52,7 +52,21 @@ def generate_invoice_for_trip_invite(trip_invite):
         additional_players_price=str(additional_players_price),
     )
 
-    client.send_invoice(draft["href"].split("/")[-1])
+    invoice_id = draft["href"].split("/")[-1]
+
+    client.send_invoice(invoice_id)
+
+    trip_invite.payment.invoice_id = invoice_id
+    # Build invoice url and save it so we can expose it in next trip step
+    paypal_url = (
+        "https://www.sandbox.paypal.com/invoice/p/#"
+        if settings.ENVIRONMENT == "production"
+        else "https://www.sandbox.paypal.com/invoice/p/#"
+    )
+    trip_invite.payment.invoice_url = "{}{}".format(paypal_url, invoice_id)
+    trip_invite.payment.save()
+
+    return invoice_id
 
 
 class PayPalClient:
@@ -241,10 +255,3 @@ class PayPalClient:
         response = self.session.post(url, data=json.dumps(data))
 
         return response.json()
-
-
-# Additional items - managed by admin
-# Paypal amount paid / total amount
-# https://www.npmjs.com/package/signature_pad
-# Send reminder button
-# Pass trip date to DUE_DATE

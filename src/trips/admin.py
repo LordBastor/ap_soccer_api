@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 
 from django.forms import ModelForm
 
+from django.utils.html import format_html
+
 from .models import (
     Package,
     Trip,
@@ -63,7 +65,6 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "player",
         "trip",
         "status",
-        "get_paid_total",
         "created_date",
         "form_information",
         "uid",
@@ -72,6 +73,7 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "uid",
         "status",
         "total_amount_due",
+        "invoice_link",
         "payment",
         "form_information",
         "terms",
@@ -80,15 +82,12 @@ class TripInvitationAdmin(admin.ModelAdmin):
     can_delete = False
     can_add_related = False
 
-    def get_paid_total(self, obj):
-        if obj.payment:
-            return "${} out of ${}".format(
-                int(obj.payment.amount_paid), int(obj.payment.amount_due)
-            )
-        else:
-            return "Not submitted"
+    def invoice_link(self, obj):
+        return format_html(
+            "<a href='{url}' target='blank'>{url}</a>", url=obj.invoice_link
+        )
 
-    get_paid_total.short_description = "Current Amount Paid"
+    invoice_link.short_description = "Firm URL"
 
 
 admin.site.register(TripInvitation, TripInvitationAdmin)
