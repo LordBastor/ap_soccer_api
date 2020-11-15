@@ -55,7 +55,7 @@ class PaymentAdmin(admin.ModelAdmin):
         response = TemplateResponse(
             request,
             "record_payment.html",
-            {"methods": methods, "invoices": ",".join(invoice_ids)},
+            {"methods": methods, "invoice_ids": ",".join(invoice_ids)},
         )
         return response
 

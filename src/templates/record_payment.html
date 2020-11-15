@@ -1,0 +1,42 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div id="content" class="col delete-confirmation">
+    <form method="post" action="/payments/record_payment/">
+        {% csrf_token %}
+        <div>
+            <div>Please specify the amount and reason you wish to record</div>
+            </br>
+
+            <div class="form-row field-position">
+                </br>
+
+                <label for="amount">Amount in USD:</label>
+                <input name="amount" value="" type="number" step="1"/>$
+
+                </br>
+                </br>
+
+                <label for="method">Payment Method:</label>
+                <select name="method", id="method">
+                    {% for method in methods %}
+                        <option value={{method}}>{{method}}</option>
+                    {% endfor %}
+                </select>
+
+                </br>
+                </br>
+
+                <label for="note">Notes:</label>
+                <textarea name="note" cols="40" rows="10" class="vLargeTextField"></textarea>
+
+                <input type="hidden" name="invoice_ids" value="{{ invoice_ids }}" />
+            </div>
+        </div>
+
+        <input type="submit" value="Record Payment">
+        <a href="/admin/payments/payment" class="button cancel-link">Go Back</a>
+    </form>    
+    <br class="clear">
+    <div id="footer"></div>
+</div>
+{% endblock %}

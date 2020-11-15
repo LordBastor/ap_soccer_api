@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+from decimal import Decimal
+
 from payments.models import Payment
 
 from payments.invoice_utils import PayPalClient
@@ -11,7 +13,7 @@ def record_payment(request, *args, **kwargs):
     invoice_ids = request.POST.get("invoice_ids", None)
     amount = request.POST.get("amount", None)
     method = request.POST.get("method", None)
-    note = request.POST.get("note", None)
+    note = request.POST.get("note", "")
 
     if amount is None or method is None:
         messages.add_message(
@@ -19,59 +21,40 @@ def record_payment(request, *args, **kwargs):
         )
         return HttpResponseRedirect(reverse("admin:payments_payment_changelist"))
 
+    if invoice_ids is None:
+        messages.add_message(
+            request, messages.ERROR, "Missing invoice data",
+        )
+        return HttpResponseRedirect(reverse("admin:payments_payment_changelist"))
 
-# def invite_to_trip(request, *args, **kwargs):
-#     trip_id = request.POST.get("trip_id", None)
-#     player_ids = request.POST.getlist("player_ids", None)
+    invoice_ids = invoice_ids.split(",")
 
-#     if not trip_id or not player_ids:
-#         messages.add_message(
-#             request, messages.ERROR, "Missing trip and/or player data",
-#         )
-#         return HttpResponseRedirect(reverse("admin:players_player_changelist"))
+    if len(invoice_ids) > 1:
+        messages.add_message(request, messages.ERROR, "Multiple payments selected!")
+        return HttpResponseRedirect(reverse("admin:payments_payment_changelist"))
 
-#     try:
-#         trip = Trip.objects.get(pk=trip_id)
-#     except (Trip.DoesNotExist, Trip.MultipleObjects):
-#         messages.add_message(
-#             request, messages.ERROR, "Specified Trip not found",
-#         )
-#         return HttpResponseRedirect(reverse("admin:players_player_changelist"))
+    payment = Payment.objects.get(id=invoice_ids[0])
 
-#     players = Player.objects.filter(id__in=player_ids)
+    client = PayPalClient()
 
-#     successful_sends = 0
+    response = client.add_payment_to_invoice(
+        invoice_id=payment.invoice_number, amount=amount, method=method, note=note
+    )
 
-#     for player in players:
-#         # Create the player invitation
-#         invitation = TripInvitation.objects.create(
-#             trip=trip, player=player, status=TripInvitation.INVITE_SENT
-#         )
+    if response.ok:
+        # Update payment object
+        payment.amount_paid += Decimal(amount)
+        payment.save()
 
-#         # Attempt to send invite email
-#         success = send_player_invite(
-#             player.first_name,
-#             player.email,
-#             invitation.uid,
-#             trip.name,
-#             trip.email_template,
-#             trip.email_files.all(),
-#         )
+        # Return success response
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            "Succesfully recorded a payment of {} to invoice with id {}".format(
+                amount, payment.invoice_number
+            ),
+        )
+        return HttpResponseRedirect(reverse("admin:players_player_changelist"))
 
-#         # If something goes wrong - let the user know and remove unused invitation
-#         if success:
-#             successful_sends += 1
-#         else:
-#             invitation.delete()
-#             messages.add_message(
-#                 request,
-#                 messages.ERROR,
-#                 "Failed to send invitation to {}".format(player),
-#             )
-
-#     messages.add_message(
-#         request,
-#         messages.SUCCESS,
-#         "Succesfully invited {} players to {}".format(successful_sends, trip.name),
-#     )
-#     return HttpResponseRedirect(reverse("admin:players_player_changelist"))
+    messages.add_message(request, messages.ERROR, response.json())
+    return HttpResponseRedirect(reverse("admin:payments_payment_changelist"))
