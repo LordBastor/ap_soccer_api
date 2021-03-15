@@ -71,9 +71,10 @@ class RecordAPIPayment(APIView):
         """
         data = request.data
 
-        invoice_data = data.get("resource")
-        payment_data = invoice_data.get("payment")
+        resource = data.get("resource")
+        invoice_data = resource.get("invoice")
         invoice_number = invoice_data.get("id")
+        payment_data = invoice_data.get("payments")
 
         payment_object = None
 
@@ -84,11 +85,7 @@ class RecordAPIPayment(APIView):
 
         paid_amount = payment_data.get("paid_amount")
 
-        total_amount_paid = Decimal(0)
-
-        for item in paid_amount:
-            total_amount_paid += Decimal(paid_amount[item]["value"])
-
+        total_amount_paid = Decimal(paid_amount["value"])
         payment_object.amount_paid = total_amount_paid
         payment_object.save()
 
