@@ -16,17 +16,20 @@ def generate_invoice_for_trip_invite(trip_invite):
     player = trip_invite.form_information["player"]
     companions = trip_invite.form_information["companions"]
 
-    # Calculate traveler price
-    additional_travelers_quantity = len(companions["companions"])
+    # Set default values
+    additional_travelers_quantity = 0
     additional_travelers_price = Decimal(0)
 
-    traveler_base_price = trip_invite.trip.traveler_price
+    if "companions" in companions:
+        # Calculate traveler price
+        additional_travelers_quantity = len(companions["companions"])
+        traveler_base_price = trip_invite.trip.traveler_price
 
-    for companion in companions["companions"]:
-        additional_travelers_price += traveler_base_price
+        for companion in companions["companions"]:
+            additional_travelers_price += traveler_base_price
 
-        if "additional_price" in companion and companion["additional_price"]:
-            additional_travelers_price += Decimal(companion["additional_price"])
+            if "additional_price" in companion and companion["additional_price"]:
+                additional_travelers_price += Decimal(companion["additional_price"])
 
     # Calculate player price
     additional_players_quantity = (

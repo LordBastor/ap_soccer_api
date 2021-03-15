@@ -114,6 +114,7 @@ class TripInvitationView(APIView):
             if future_status == TripInvitation.TERMS_AGREED:
                 data["terms_accepted_on"] = timezone.now()
                 generate_invoice_for_trip_invite(trip_invite)
+                data["status"] = TripInvitation.INVOICE_SENT
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
