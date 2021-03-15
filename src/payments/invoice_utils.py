@@ -29,9 +29,11 @@ def generate_invoice_for_trip_invite(trip_invite):
             additional_travelers_price += Decimal(companion["additional_price"])
 
     # Calculate player price
-    additional_players_quantity = len(companions["players"])
-    additional_players_price = trip_invite.trip.player_price * len(
-        companions["players"]
+    additional_players_quantity = (
+        len(companions["players"]) if "players" in companions else 0
+    )
+    additional_players_price = (
+        trip_invite.trip.player_price * additional_players_quantity
     )
 
     draft = client.create_invoice_draft(
@@ -232,24 +234,6 @@ class PayPalClient:
                     "unit_amount": {"currency_code": "USD", "value": trip_price},
                     "unit_of_measure": "QUANTITY",
                 },
-                {
-                    "name": "Additional Traveler for {}".format(trip_name),
-                    "quantity": additional_travelers_quantity,
-                    "unit_amount": {
-                        "currency_code": "USD",
-                        "value": additional_travelers_price,
-                    },
-                    "unit_of_measure": "QUANTITY",
-                },
-                {
-                    "name": "Additional Players for {}".format(trip_name),
-                    "quantity": additional_players_quantity,
-                    "unit_amount": {
-                        "currency_code": "USD",
-                        "value": additional_players_price,
-                    },
-                    "unit_of_measure": "QUANTITY",
-                },
             ],
             "configuration": {
                 "partial_payment": {
@@ -264,6 +248,31 @@ class PayPalClient:
                 "tax_inclusive": False,
             },
         }
+
+        if int(additional_travelers_quantity):
+            data["items"].append(
+                {
+                    "name": "Additional Traveler for {}".format(trip_name),
+                    "quantity": additional_travelers_quantity,
+                    "unit_amount": {
+                        "currency_code": "USD",
+                        "value": additional_travelers_price,
+                    },
+                    "unit_of_measure": "QUANTITY",
+                }
+            )
+        if int(additional_players_quantity):
+            data["items"].append(
+                {
+                    "name": "Additional Players for {}".format(trip_name),
+                    "quantity": additional_players_quantity,
+                    "unit_amount": {
+                        "currency_code": "USD",
+                        "value": additional_players_price,
+                    },
+                    "unit_of_measure": "QUANTITY",
+                }
+            )
 
         response = self.session.post(url, data=json.dumps(data))
 
