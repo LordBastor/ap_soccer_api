@@ -99,7 +99,7 @@ class TripInvitation(BaseModel):
         "trips.TripTerms", on_delete=models.PROTECT, blank=True, null=True
     )
     terms_signature = models.ImageField(upload_to="images/", blank=True, null=True)
-    terms_accepted_on = models.DateTimeField()
+    terms_accepted_on = models.DateTimeField(null=True)
 
     def __str__(self):
         return "Trip: {} for player {} with status {}".format(
