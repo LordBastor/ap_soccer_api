@@ -53,6 +53,7 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "form_information",
             "terms",
             "terms_signature",
+            "terms_accepted_on",
             "is_valid",
             "invoice_link",
         ]

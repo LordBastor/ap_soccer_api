@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.utils import timezone
 from django.http import Http404
 from rest_framework.views import APIView
 
@@ -111,6 +112,7 @@ class TripInvitationView(APIView):
 
             # If the terms have been agreed - let us generate the invoice
             if future_status == TripInvitation.TERMS_AGREED:
+                data["terms_accepted_on"] = timezone.now()
                 generate_invoice_for_trip_invite(trip_invite)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
