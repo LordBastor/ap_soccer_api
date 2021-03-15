@@ -72,6 +72,7 @@ class RecordAPIPayment(APIView):
         data = request.data
 
         invoice_data = data.get("resource")
+        payment_data = invoice_data.get("payment")
         invoice_number = invoice_data.get("id")
 
         payment_object = None
@@ -81,7 +82,7 @@ class RecordAPIPayment(APIView):
         except Payment.DoesNotExist:
             return Response(status=status.HTTP_200_OK)
 
-        paid_amount = invoice_data.get("paid_amount")
+        paid_amount = payment_data.get("paid_amount")
 
         total_amount_paid = Decimal(0)
 
