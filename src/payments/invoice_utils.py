@@ -5,6 +5,8 @@ import json
 
 from django.conf import settings
 
+from payments.models import PayPalInvoice
+
 import requests
 
 
@@ -73,8 +75,8 @@ def generate_invoicer():
         "email_address": invoicer_email_address,
         "phones": [
             {
-                "country_code": "+1",
-                "national_number": "727-452-4246",
+                "country_code": "001",
+                "national_number": "7274524246",
                 "phone_type": "MOBILE",
             }
         ],
@@ -127,8 +129,8 @@ def generate_items(trip_invite, player, deposit_only):
     type_of_payment = "Deposit" if deposit_only else "Payment"
 
     # Increment prices by 3%
-    player_price = player_price * Decimal("1.03")
-    traveler_price = traveler_price * Decimal("1.03")
+    player_price = str(player_price * Decimal("1.03"))
+    traveler_price = str(traveler_price * Decimal("1.03"))
 
     additional_people = trip_invite.form_information["companions"]
 
@@ -190,7 +192,7 @@ def generate_items(trip_invite, player, deposit_only):
             for traveler in additional_people["companions"]
         ]
 
-    player_data.extends(traveler_data)
+    player_data.extend(traveler_data)
     return player_data
 
 
@@ -224,20 +226,26 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
         configuration=configuration,
     )
 
-    invoice_id = draft["href"].split("/")[-1]
-
-    client.send_invoice(invoice_id)
-
-    trip_invite.payment.invoice_number = invoice_id
-
     # Build invoice url and save it so we can expose it in next trip step
+    invoice_id = draft["href"].split("/")[-1]
     paypal_url = (
         "https://www.sandbox.paypal.com/invoice/p/#"
         if settings.ENVIRONMENT == "production"
         else "https://www.sandbox.paypal.com/invoice/p/#"
     )
-    trip_invite.payment.invoice_url = "{}{}".format(paypal_url, invoice_id)
-    trip_invite.payment.save()
+
+    client.send_invoice(invoice_id)
+
+    invoice_details = client.get_invoice_details(invoice_id)
+
+    PayPalInvoice.objects.create(
+        payment=trip_invite.payment,
+        amount_paid=Decimal("0"),
+        amount_due=Decimal(invoice_details["amount"]["value"]),
+        invoice_number=invoice_id,
+        invoice_url="{}{}".format(paypal_url, invoice_id),
+        invoice_type=PayPalInvoice.DEPOSIT if deposit_only else PayPalInvoice.REST,
+    )
 
     return invoice_id
 
@@ -271,6 +279,11 @@ class PayPalClient:
             "Authorization": "Bearer {}".format(response.json()["access_token"]),
         }
 
+    def get_invoice_details(self, invoice_id):
+        url = "{}/v2/invoicing/invoices/{}".format(self.root_url, invoice_id)
+        response = self.session.get(url)
+        return response.json()
+
     def generate_invoice_number(self):
         url = "{}/v2/invoicing/generate-next-invoice-number".format(self.root_url)
         response = self.session.post(url)
@@ -300,9 +313,7 @@ class PayPalClient:
 
         return response
 
-    def create_invoice_draft(
-        self, detail, invoicer, recipients, items, configuration, data,
-    ):
+    def create_invoice_draft(self, detail, invoicer, recipients, items, configuration):
         url = "{}/v2/invoicing/invoices".format(self.root_url)
 
         data = {
