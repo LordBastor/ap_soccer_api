@@ -85,9 +85,7 @@ class TripInvitationView(APIView):
                             amount_due += Decimal(companion["additional_price"])
 
                 payment = Payment.objects.create(
-                    amount_paid=Decimal(0),
-                    amount_due=amount_due,
-                    amount_deposit=amount_deposit,
+                    amount_due=amount_due, amount_deposit=amount_deposit,
                 )
 
                 data["total_amount_due"] = amount_due
@@ -112,7 +110,7 @@ class TripInvitationView(APIView):
 
             # If the terms have been agreed - let us generate the invoice
             if future_status == TripInvitation.TERMS_AGREED:
-                generate_invoice_for_trip_invite(trip_invite)
+                generate_invoice_for_trip_invite(trip_invite, True)
 
                 data["terms_accepted_on"] = timezone.now()
                 data["status"] = TripInvitation.INVOICE_SENT

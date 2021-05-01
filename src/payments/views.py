@@ -14,7 +14,6 @@ from payments.models import Payment, PayPalInvoice
 from payments.invoice_utils import PayPalClient, generate_invoice_for_trip_invite
 
 
-# TO DO - rewrite for new flow
 def record_payment(request, *args, **kwargs):
     invoice_ids = request.POST.get("invoice_ids", None)
     amount = request.POST.get("amount", None)

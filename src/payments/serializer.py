@@ -16,7 +16,7 @@ class PayPalInvoiceSerializer(serializers.ModelSerializer):
 
 
 class PaymentSerializer(serializers.ModelSerializer):
-    invoices = PayPalInvoiceSerializer(source="paypalinvoice_set")
+    invoices = PayPalInvoiceSerializer(source="paypalinvoice_set", many=True)
 
     class Meta:
         model = Payment

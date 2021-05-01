@@ -181,7 +181,9 @@ def generate_items(trip_invite, player, deposit_only):
                     first_name=traveler["first_name"],
                     last_name=traveler["last_name"],
                     trip_name=trip_name,
-                    package=" + ${}".format(traveler["additional_price"])
+                    package=" + ${} Additional Package".format(
+                        traveler["additional_price"]
+                    )
                     if traveler["additional_price"]
                     else "",
                 ),
