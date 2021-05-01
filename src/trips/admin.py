@@ -79,7 +79,10 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "terms",
         "terms_accepted_on",
     )
-    list_filter = ("status",)
+    list_filter = (
+        "status",
+        "trip__name",
+    )
     can_delete = False
     can_add_related = False
 

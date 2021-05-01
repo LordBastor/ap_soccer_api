@@ -234,7 +234,15 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
         else "https://www.sandbox.paypal.com/invoice/p/#"
     )
 
-    client.send_invoice(invoice_id)
+    additional_recipients = []
+    if "companions" in trip_invite.form_information["companions"]:
+        additional_recipients = [
+            companion["email"]
+            for companion in trip_invite.form_information["companions"]["companions"]
+            if "email" in companion
+        ]
+
+    client.send_invoice(invoice_id, additional_recipients)
 
     invoice_details = client.get_invoice_details(invoice_id)
 
@@ -289,12 +297,12 @@ class PayPalClient:
         response = self.session.post(url)
         return response.json()["invoice_number"]
 
-    def send_invoice(self, invoice_id):
+    def send_invoice(self, invoice_id, additional_recipients):
         url = "{}/v2/invoicing/invoices/{}/send".format(self.root_url, invoice_id)
         data = {
             "send_to_recipient": True,
             "send_to_invoicer": True,
-            # "additional_recipients": [],
+            "additional_recipients": additional_recipients,
         }
         response = self.session.post(url, data=json.dumps(data))
 
