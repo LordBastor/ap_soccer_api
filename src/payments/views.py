@@ -39,25 +39,25 @@ def record_payment(request, *args, **kwargs):
         messages.add_message(request, messages.ERROR, "Multiple payments selected!")
         return HttpResponseRedirect(reverse("admin:payments_payment_changelist"))
 
-    payment = Payment.objects.get(id=invoice_ids[0])
+    invoice = PayPalInvoice.objects.get(id=invoice_ids[0])
 
     client = PayPalClient()
 
     response = client.add_payment_to_invoice(
-        invoice_id=payment.invoice_number, amount=amount, method=method, note=note
+        invoice_id=invoice.invoice_number, amount=amount, method=method, note=note
     )
 
     if response.ok:
         # Update payment object
-        payment.amount_paid += Decimal(amount)
-        payment.save()
+        invoice.amount_paid += Decimal(amount)
+        invoice.save()
 
         # Return success response
         messages.add_message(
             request,
             messages.SUCCESS,
             "Succesfully recorded a payment of {} to invoice with id {}".format(
-                amount, payment.invoice_number
+                amount, invoice.invoice_number
             ),
         )
         return HttpResponseRedirect(reverse("admin:players_player_changelist"))
