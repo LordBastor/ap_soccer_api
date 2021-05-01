@@ -124,8 +124,16 @@ def generate_configuration(deposit_only):
 def generate_items(trip_invite, player, deposit_only):
     trip = trip_invite.trip
     trip_name = trip.name
-    player_price = trip.deposit_amount if deposit_only else trip.player_price
-    traveler_price = trip.deposit_amount if deposit_only else trip.traveler_price
+    player_price = (
+        trip.deposit_amount
+        if deposit_only
+        else (trip.player_price - trip.deposit_amount)
+    )
+    traveler_price = (
+        trip.deposit_amount
+        if deposit_only
+        else (trip.traveler_price - trip.deposit_amount)
+    )
     type_of_payment = "Deposit" if deposit_only else "Payment"
 
     # Increment prices by 3%
