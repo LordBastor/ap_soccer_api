@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.db.models import Sum
+
 
 class PayPalInvoice(models.Model):
     DEPOSIT = "Deposit"
@@ -20,8 +22,8 @@ class PayPalInvoice(models.Model):
     )
 
     def __str__(self):
-        return "adsaInvoice #{} Paid: ${}/${}".format(
-            self.invoice_number, int(self.amount_paid), int(self.amount_due)
+        return "Invoice #{} Paid: ${}/${}".format(
+            self.invoice_number, float(self.amount_paid), float(self.amount_due)
         )
 
 
@@ -30,4 +32,11 @@ class Payment(models.Model):
     amount_deposit = models.DecimalField(max_digits=12, decimal_places=2)
 
     def __str__(self):
-        return "Paid/Due: {}$/{}$".format(int(self.amount_due), int(self.amount_due))
+        total_amount_paid = self.paypalinvoice_set.aggregate(Sum("amount_paid"))[
+            "amount_paid__sum"
+        ]
+        if not total_amount_paid:
+            total_amount_paid = 0
+        return "Paid/Due: {}$/{}$".format(
+            float(total_amount_paid), float(self.amount_due)
+        )
