@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
@@ -10,9 +11,10 @@ from decimal import Decimal
 
 from payments.models import Payment, PayPalInvoice
 
-from payments.invoice_utils import PayPalClient
+from payments.invoice_utils import PayPalClient, generate_invoice_for_trip_invite
 
 
+# TO DO - rewrite for new flow
 def record_payment(request, *args, **kwargs):
     invoice_ids = request.POST.get("invoice_ids", None)
     amount = request.POST.get("amount", None)
@@ -75,6 +77,7 @@ class RecordAPIPayment(APIView):
         invoice_data = resource.get("invoice")
         invoice_number = invoice_data.get("id")
         payment_data = invoice_data.get("payments")
+        paid_amount = payment_data.get("paid_amount")
 
         invoice_object = None
 
@@ -83,19 +86,30 @@ class RecordAPIPayment(APIView):
         except Payment.DoesNotExist:
             return Response(status=status.HTTP_200_OK)
 
-        paid_amount = payment_data.get("paid_amount")
-
-        total_amount_paid = Decimal(paid_amount["value"])
-        invoice_object.amount_paid = total_amount_paid
+        # Update the invoice paid amount
+        invoice_object.amount_paid = Decimal(paid_amount["value"])
         invoice_object.save()
 
-        trip_invitation = payment_object.tripinvitation_set.all()[0]
+        # Let's grab the total amount paid so far
+        payment_object = invoice_object.payment
+        total_amount_paid = payment_object.paypalinvoice_set.aggregate(
+            Sum("amount_paid")
+        )["amount_paid__sum"]
 
-        if Decimal(payment_object.amount_paid) == Decimal(payment_object.amount_due):
+        # Get the trip invite
+        trip_invitation = invoice_object.payment.tripinvitation_set.all()[0]
+
+        if total_amount_paid >= payment_object.amount_due:
             trip_invitation.status = "Paid"
-        else:
+        elif total_amount_paid >= payment_object.amount_deposit:
             trip_invitation.status = "Deposit Paid"
 
         trip_invitation.save()
+
+        # Moved this outside of the if/elif so we don't fail to update
+        # the payment if invoice creation fails for some reason
+        if trip_invitation.status == "Deposit Paid":
+            # Create and send leftover invoice
+            generate_invoice_for_trip_invite(trip_invitation, False)
 
         return Response(status=status.HTTP_200_OK)

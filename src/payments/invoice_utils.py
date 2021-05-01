@@ -110,16 +110,11 @@ def generate_recipients(player):
 
 def generate_configuration(deposit_only):
     configuration = {
-        "partial_payment": {"allow_partial_payment": "True"},
+        "partial_payment": {"allow_partial_payment": not deposit_only},
         "allow_tip": False,
         "tax_calculated_after_discount": True,
         "tax_inclusive": False,
     }
-
-    # Remove support for partial payments if we are doing deposit flow
-    if deposit_only:
-        configuration["partial_payment"]["allow_partial_payment"] = "False"
-        del configuration["partial_payment"]["minimum_amount_due"]
 
     return configuration
 
@@ -130,6 +125,10 @@ def generate_items(trip_invite, player, deposit_only):
     player_price = trip.deposit_amount if deposit_only else trip.player_price
     traveler_price = trip.deposit_amount if deposit_only else trip.traveler_price
     type_of_payment = "Deposit" if deposit_only else "Payment"
+
+    # Increment prices by 3%
+    player_price = player_price * Decimal("1.03")
+    traveler_price = traveler_price * Decimal("1.03")
 
     additional_people = trip_invite.form_information["companions"]
 
