@@ -77,6 +77,7 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "payment",
         "form_information",
         "terms",
+        "terms_accepted_on",
     )
     list_filter = ("status",)
     can_delete = False

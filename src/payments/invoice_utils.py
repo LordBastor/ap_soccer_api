@@ -8,53 +8,221 @@ from django.conf import settings
 import requests
 
 
-def generate_invoice_for_trip_invite(trip_invite):
+def generate_detail(invoice_number, today, deposit_only, due_date):
+
+    note = (
+        "All online transactions are subject to a 3% Processing fee.\n"
+        "In order to avoid those fees, you can pay the rest of the the "
+        "remaining balance via check, money order or Zelle.\n"
+        "For Check/money orders, please make them payable to AP Soccer LLC "
+        "and mail them to: AP Soccer 6339 Hobson St. N. E. St. Petersburg, FL 33702.\n"
+        "For Zelle, please use support@americanpremiersoccer.com for all payments to "
+        "our account."
+    )
+
+    if deposit_only:
+        note = (
+            "All online transactions are subject to a 3% Processing fee "
+            "($500.00 + 3% Processing Fee $15.00 = $515.00).\n"
+            "In order to avoid those fees, you can pay the rest of the amount, "
+            "after the deposit is paid using check, money order, or Zelle.\n"
+            "Additional information will be provided, once your deposit/s is received.\n"
+            "Thank you!"
+        )
+
+    terms_and_conditions = (
+        "All outstanding balances have to be closed by {}.\n"
+        "Please reach out to us at support@americanpremiersoccer.com if you have any "
+        "questions.\n"
+        "Thank you!"
+    ).format(due_date.strftime("%B %d, %Y"))
+
+    detail = {
+        "invoice_number": invoice_number,
+        "reference": "deal-ref",
+        "invoice_date": str(today.date()),
+        "currency_code": "USD",
+        "note": note,
+        "terms_and_conditions": terms_and_conditions,
+        "payment_term": {
+            "term_type": "DUE_ON_DATE_SPECIFIED",
+            "due_date": str(due_date),
+        },
+    }
+
+    return detail
+
+
+def generate_invoicer():
+    invoicer_email_address = (
+        "support@americanpremiersoccer.com"
+        if settings.ENVIRONMENT == "production"
+        else "sb-qswj5269996@business.example.com"
+    )
+
+    invoicer = {
+        "business_name": "AP Soccer Enterprises, LLC",
+        "address": {
+            "address_line_1": "6339 Hobson St. N. E.",
+            "address_line_2": "",
+            "admin_area_2": "Saint Petersburg",
+            "admin_area_1": "FL",
+            "postal_code": "33702",
+            "country_code": "US",
+        },
+        "email_address": invoicer_email_address,
+        "phones": [
+            {
+                "country_code": "+1",
+                "national_number": "727-452-4246",
+                "phone_type": "MOBILE",
+            }
+        ],
+        "website": "https://americanpremiersoccer.com",
+        "tax_id": "84-3667031",
+        "logo_url": "https://americanpremiersoccer.com/wp-content/uploads/2020/01/APS-Transparent-Final-Small-Resised-2.png",
+    }
+
+    return invoicer
+
+
+def generate_recipients(player):
+    recipients = [
+        {
+            "billing_info": {
+                "name": {
+                    "given_name": player["parent_first_name"],
+                    "surname": player["parent_last_name"],
+                },
+                "address": {
+                    "address_line_1": player["address"],
+                    "admin_area_2": player["city"],
+                    "admin_area_1": player["state"],
+                    "postal_code": player["zip_code"],
+                    "country_code": "US",
+                },
+                "email_address": player["email"],
+            }
+        }
+    ]
+    return recipients
+
+
+def generate_configuration(deposit_only):
+    configuration = {
+        "partial_payment": {"allow_partial_payment": "True"},
+        "allow_tip": False,
+        "tax_calculated_after_discount": True,
+        "tax_inclusive": False,
+    }
+
+    # Remove support for partial payments if we are doing deposit flow
+    if deposit_only:
+        configuration["partial_payment"]["allow_partial_payment"] = "False"
+        del configuration["partial_payment"]["minimum_amount_due"]
+
+    return configuration
+
+
+def generate_items(trip_invite, player, deposit_only):
+    trip = trip_invite.trip
+    trip_name = trip.name
+    player_price = trip.deposit_amount if deposit_only else trip.player_price
+    traveler_price = trip.deposit_amount if deposit_only else trip.traveler_price
+    type_of_payment = "Deposit" if deposit_only else "Payment"
+
+    additional_people = trip_invite.form_information["companions"]
+
+    player_data = []
+
+    # Conditionally compute additional players
+    if "players" in additional_people:
+        player_data = [
+            {
+                "name": "{type_of_payment} for {first_name} {last_name} to attend {trip_name}".format(
+                    type_of_payment=type_of_payment,
+                    first_name=additional_player["first_name"],
+                    last_name=additional_player["last_name"],
+                    trip_name=trip_name,
+                ),
+                "quantity": 1,
+                "unit_amount": {"currency_code": "USD", "value": player_price},
+                "unit_of_measure": "QUANTITY",
+            }
+            for additional_player in additional_people["players"]
+        ]
+
+    # Add player to first position in player array
+    player_data.insert(
+        0,
+        {
+            "name": "{type_of_payment} for {first_name} {last_name} to attend {trip_name}".format(
+                type_of_payment=type_of_payment,
+                first_name=player["first_name"],
+                last_name=player["last_name"],
+                trip_name=trip_name,
+            ),
+            "quantity": 1,
+            "unit_amount": {"currency_code": "USD", "value": player_price},
+            "unit_of_measure": "QUANTITY",
+        },
+    )
+
+    traveler_data = []
+    if "companions" in additional_people:
+        traveler_data = [
+            {
+                "name": (
+                    "{type_of_payment} for {first_name} {last_name} to accompany a "
+                    "player on {trip_name}.{package}"
+                ).format(
+                    type_of_payment=type_of_payment,
+                    first_name=traveler["first_name"],
+                    last_name=traveler["last_name"],
+                    trip_name=trip_name,
+                    package=" + ${}".format(traveler["additional_price"])
+                    if traveler["additional_price"]
+                    else "",
+                ),
+                "quantity": 1,
+                "unit_amount": {"currency_code": "USD", "value": traveler_price},
+                "unit_of_measure": "QUANTITY",
+            }
+            for traveler in additional_people["companions"]
+        ]
+
+    player_data.extends(traveler_data)
+    return player_data
+
+
+def generate_invoice_for_trip_invite(trip_invite, deposit_only):
+    """
+    Given a trip_invitation object and a boolean - generates an invoice
+    If deposit_only is True - invoice is generated only for a deposit
+    Otherwise - generates for the leftover amount
+    """
     client = PayPalClient()
 
+    # Data needed for Detail Invoice Section
     invoice_number = client.generate_invoice_number()
+    today = datetime.datetime.today()
+    due_date = trip_invite.trip.from_date - datetime.timedelta(days=31)
 
+    # Data needed for Recipients Invoice Section
     player = trip_invite.form_information["player"]
-    companions = trip_invite.form_information["companions"]
 
-    # Set default values
-    additional_travelers_quantity = 0
-    additional_travelers_price = Decimal(0)
-
-    if "companions" in companions:
-        # Calculate traveler price
-        additional_travelers_quantity = len(companions["companions"])
-        traveler_base_price = trip_invite.trip.traveler_price
-
-        for companion in companions["companions"]:
-            additional_travelers_price += traveler_base_price
-
-            if "additional_price" in companion and companion["additional_price"]:
-                additional_travelers_price += Decimal(companion["additional_price"])
-
-    # Calculate player price
-    additional_players_quantity = (
-        len(companions["players"]) if "players" in companions else 0
-    )
-    additional_players_price = (
-        trip_invite.trip.player_price * additional_players_quantity
-    )
+    detail = generate_detail(invoice_number, today, deposit_only, due_date)
+    invoicer = generate_invoicer()
+    recipients = generate_recipients(player)
+    configuration = generate_configuration(deposit_only)
+    items = generate_items(trip_invite, player, deposit_only)
 
     draft = client.create_invoice_draft(
-        invoice_number=invoice_number,
-        recipient_given_name=player["parent_first_name"],
-        recipient_surname=player["parent_last_name"],
-        recipient_phone=player["phone"],
-        recipient_email=player["email"],
-        recipient_address=player["address"],
-        trip_name=trip_invite.trip.name,
-        trip_date=trip_invite.trip.from_date,
-        trip_description=trip_invite.trip.name,
-        trip_price=str(trip_invite.trip.player_price),
-        amount_deposit=str(trip_invite.payment.amount_deposit),
-        additional_travelers_quantity=str(additional_travelers_quantity),
-        additional_travelers_price=str(additional_travelers_price),
-        additional_players_quantity=str(additional_players_quantity),
-        additional_players_price=str(additional_players_price),
+        detail=detail,
+        invoicer=invoicer,
+        recipients=recipients,
+        items=items,
+        configuration=configuration,
     )
 
     invoice_id = draft["href"].split("/")[-1]
@@ -62,6 +230,7 @@ def generate_invoice_for_trip_invite(trip_invite):
     client.send_invoice(invoice_id)
 
     trip_invite.payment.invoice_number = invoice_id
+
     # Build invoice url and save it so we can expose it in next trip step
     paypal_url = (
         "https://www.sandbox.paypal.com/invoice/p/#"
@@ -133,149 +302,17 @@ class PayPalClient:
         return response
 
     def create_invoice_draft(
-        self,
-        invoice_number,
-        recipient_given_name,
-        recipient_surname,
-        recipient_phone,
-        recipient_email,
-        recipient_address,
-        trip_name,
-        trip_date,
-        trip_description,
-        trip_price,
-        amount_deposit,
-        additional_travelers_quantity,
-        additional_travelers_price,
-        additional_players_quantity,
-        additional_players_price,
+        self, detail, invoicer, recipients, items, configuration, data,
     ):
         url = "{}/v2/invoicing/invoices".format(self.root_url)
 
-        today = datetime.datetime.today()
-
-        due_date = trip_date - datetime.timedelta(days=31)
-
         data = {
-            "detail": {
-                "invoice_number": invoice_number,
-                "reference": "deal-ref",
-                "invoice_date": str(today.date()),
-                "currency_code": "USD",
-                "note": (
-                    "In order to avoid the 3% Processing fees for all online transactions, "
-                    "you can mail us a check for the remaining balance. Please make out the "
-                    "check payable to GFL Soccer Enterprises, and mail to GFL Soccer 6339 "
-                    "Hobson St. N. E. St. Petersburg, FL 33702. \n"
-                    "You can also use a direct bank deposit or Zelle. "
-                    "Please reach out to us at contact@gflsoccer.com if you want to do a direct deposit."
-                ),
-                "terms_and_conditions": (
-                    "We have received your deposit. Thank you! \n"
-                    "We need an additional minimum of $500.00 (or $515.00 with 3% processing fee added) "
-                    "ASAP in order to add your child to the uniform roster and you to be able to order the uniform for the trip. \n"
-                    "The final amount due for the trip is {}. \n"
-                    "You can pay partial, or the full amount of this invoice at any time. \n"
-                ).format(due_date.strftime("%B %d, %Y")),
-                "payment_term": {
-                    "term_type": "DUE_ON_DATE_SPECIFIED",
-                    "due_date": str(due_date),
-                },
-            },
-            "invoicer": {  # Fill out invoicer info
-                "business_name": "AP Soccer Enterprises, LLC",
-                "address": {
-                    "address_line_1": "6339 Hobson St. N. E.",
-                    "address_line_2": "",
-                    "admin_area_2": "Saint Petersburg",
-                    "admin_area_1": "FL",
-                    "postal_code": "33702",
-                    "country_code": "US",
-                },
-                "email_address": "sb-qswj5269996@business.example.com",
-                "phones": [
-                    {
-                        "country_code": "001",
-                        "national_number": "4085551234",
-                        "phone_type": "MOBILE",
-                    }
-                ],
-                "website": "https://americanpremiersoccer.com",
-                "tax_id": "45-4532237",
-                "logo_url": "https://americanpremiersoccer.com/wp-content/uploads/2020/01/APS-Transparent-Final-Small-Resised-2.png",
-            },
-            "primary_recipients": [
-                {
-                    "billing_info": {
-                        "name": {
-                            "given_name": recipient_given_name,
-                            "surname": recipient_surname,
-                        },
-                        "address": {
-                            "address_line_1": "1234 Main Street",
-                            "admin_area_2": "Anytown",
-                            "admin_area_1": "CA",
-                            "postal_code": "98765",
-                            "country_code": "US",
-                        },
-                        "email_address": recipient_email,
-                        "phones": [
-                            {
-                                "country_code": "001",
-                                "national_number": "4884551234",
-                                "phone_type": "HOME",
-                            }
-                        ],
-                    }
-                }
-            ],
-            "items": [
-                {
-                    "name": trip_name,
-                    "description": trip_description,
-                    "quantity": "1",
-                    "unit_amount": {"currency_code": "USD", "value": trip_price},
-                    "unit_of_measure": "QUANTITY",
-                },
-            ],
-            "configuration": {
-                "partial_payment": {
-                    "allow_partial_payment": True,
-                    "minimum_amount_due": {
-                        "currency_code": "USD",
-                        "value": str(amount_deposit),
-                    },
-                },
-                "allow_tip": False,
-                "tax_calculated_after_discount": True,
-                "tax_inclusive": False,
-            },
+            "detail": detail,
+            "invoicer": invoicer,
+            "primary_recipients": recipients,
+            "items": items,
+            "configuration": configuration,
         }
-
-        if int(additional_travelers_quantity):
-            data["items"].append(
-                {
-                    "name": "Additional Traveler for {}".format(trip_name),
-                    "quantity": additional_travelers_quantity,
-                    "unit_amount": {
-                        "currency_code": "USD",
-                        "value": additional_travelers_price,
-                    },
-                    "unit_of_measure": "QUANTITY",
-                }
-            )
-        if int(additional_players_quantity):
-            data["items"].append(
-                {
-                    "name": "Additional Players for {}".format(trip_name),
-                    "quantity": additional_players_quantity,
-                    "unit_amount": {
-                        "currency_code": "USD",
-                        "value": additional_players_price,
-                    },
-                    "unit_of_measure": "QUANTITY",
-                }
-            )
 
         response = self.session.post(url, data=json.dumps(data))
 

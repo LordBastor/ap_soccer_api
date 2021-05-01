@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from decimal import Decimal
 
-from payments.models import Payment
+from payments.models import Payment, PayPalInvoice
 
 from payments.invoice_utils import PayPalClient
 
@@ -76,18 +76,18 @@ class RecordAPIPayment(APIView):
         invoice_number = invoice_data.get("id")
         payment_data = invoice_data.get("payments")
 
-        payment_object = None
+        invoice_object = None
 
         try:
-            payment_object = Payment.objects.get(invoice_number=invoice_number)
+            invoice_object = PayPalInvoice.objects.get(invoice_number=invoice_number)
         except Payment.DoesNotExist:
             return Response(status=status.HTTP_200_OK)
 
         paid_amount = payment_data.get("paid_amount")
 
         total_amount_paid = Decimal(paid_amount["value"])
-        payment_object.amount_paid = total_amount_paid
-        payment_object.save()
+        invoice_object.amount_paid = total_amount_paid
+        invoice_object.save()
 
         trip_invitation = payment_object.tripinvitation_set.all()[0]
 
