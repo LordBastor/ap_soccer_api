@@ -1,16 +1,12 @@
-from django.db import models
-from django.utils import timezone
-from django.contrib.postgres.fields import JSONField
-
+import uuid
+from datetime import timedelta
 from decimal import Decimal
 
-from datetime import timedelta
-
-from ckeditor.fields import RichTextField
-
 from app.model_utils import BaseModel
-
-import uuid
+from ckeditor.fields import RichTextField
+from django.contrib.postgres.fields import JSONField
+from django.db import models
+from django.utils import timezone
 
 
 class TripTerms(BaseModel):
@@ -45,6 +41,9 @@ class Trip(BaseModel):
     package_options = models.ManyToManyField("trips.Package")
     email_template = RichTextField(blank=True, null=True)
     email_files = models.ManyToManyField("trips.TripDocument", blank=True)
+    deposit_files = models.ManyToManyField(
+        "trips.TripDocument", blank=True, related_name="deposit_files"
+    )
 
     def __str__(self):
         return "{} from {} to {}".format(self.name, self.from_date, self.to_date)
@@ -80,9 +79,7 @@ class TripInvitation(BaseModel):
 
     # Relations and status
     uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    status = models.CharField(
-        max_length=30, choices=STATUS_CHOICES, default=INVITE_SENT
-    )
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=INVITE_SENT)
     player = models.ForeignKey("players.Player", on_delete=models.PROTECT)
     trip = models.ForeignKey("trips.Trip", on_delete=models.PROTECT)
     payment = models.ForeignKey(

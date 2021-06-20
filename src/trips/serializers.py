@@ -1,11 +1,8 @@
-from rest_framework import serializers
-
 from drf_extra_fields.fields import Base64ImageField
-
-from players.serializers import PlayerSerializer
 from payments.serializer import PaymentSerializer
-
-from trips.models import TripInvitation, Trip, Package, TripTerms
+from players.serializers import PlayerSerializer
+from rest_framework import serializers
+from trips.models import Package, Trip, TripDocument, TripInvitation, TripTerms
 
 
 class PackageSerializer(serializers.ModelSerializer):
@@ -16,6 +13,12 @@ class PackageSerializer(serializers.ModelSerializer):
             "price",
             "description",
         ]
+
+
+class TripDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TripDocument
+        fields = ["document"]
 
 
 class TripSerializer(serializers.ModelSerializer):
@@ -30,9 +33,11 @@ class TripSerializer(serializers.ModelSerializer):
             "player_price",
             "traveler_price",
             "package_options",
+            "deposit_files",
         ]
 
     package_options = PackageSerializer(many=True)
+    deposit_files = TripDocumentSerializer(many=True)
 
 
 class TripInvitationSerializer(serializers.ModelSerializer):
