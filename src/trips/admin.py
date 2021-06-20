@@ -1,18 +1,9 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-
 from django.forms import ModelForm
-
 from django.utils.html import format_html
 
-from .models import (
-    Package,
-    Trip,
-    TripInvitation,
-    TripDocument,
-    TripTerms,
-)
-
+from .models import Package, Trip, TripDocument, TripInvitation, TripTerms
 
 admin.site.register(TripDocument)
 
@@ -27,6 +18,10 @@ admin.site.register(Package, PackageAdmin)
 
 class TripDocumentInline(admin.TabularInline):
     model = Trip.email_files.through
+
+
+class TripDepositFilesInline(admin.TabularInline):
+    model = Trip.deposit_files.through
 
 
 class TripAdminForm(ModelForm):
@@ -54,7 +49,7 @@ class TripAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("live",)
     form = TripAdminForm
-    inlines = (TripDocumentInline,)
+    inlines = (TripDocumentInline, TripDepositFilesInline)
 
 
 admin.site.register(Trip, TripAdmin)
@@ -87,9 +82,7 @@ class TripInvitationAdmin(admin.ModelAdmin):
     can_add_related = False
 
     def invoice_link(self, obj):
-        return format_html(
-            "<a href='{url}' target='blank'>{url}</a>", url=obj.invoice_link
-        )
+        return format_html("<a href='{url}' target='blank'>{url}</a>", url=obj.invoice_link)
 
     invoice_link.short_description = "PayPal Invoice URL"
 
@@ -103,17 +96,13 @@ class TripTermsAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id=None, form_url="", extra_context=None):
         # use extra_context to disable the other save (and/or delete) buttons
-        extra_context = dict(
-            show_save=False, show_save_and_continue=False, show_delete=False
-        )
+        extra_context = dict(show_save=False, show_save_and_continue=False, show_delete=False)
         # get a reference to the original has_add_permission method
         has_add_permission = self.has_add_permission
         # monkey patch: temporarily override has_add_permission so it returns False
         self.has_add_permission = lambda __: False
         # get the TemplateResponse from super (python 3)
-        template_response = super().change_view(
-            request, object_id, form_url, extra_context
-        )
+        template_response = super().change_view(request, object_id, form_url, extra_context)
         # restore the original has_add_permission (otherwise we cannot add anymore)
         self.has_add_permission = has_add_permission
         # return the result
