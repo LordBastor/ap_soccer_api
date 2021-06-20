@@ -56,6 +56,18 @@ class TripDocument(BaseModel):
         return self.document.url
 
 
+def get_trip_invitation_file_path(instance, filename):
+    return "trip_{}/{}".format(str(instance.trip_invitation.uid), filename)
+
+
+class TripInvitationFile(BaseModel):
+    document = models.FileField(upload_to=get_trip_invitation_file_path)
+    trip_invitation = models.ForeignKey("trips.TripInvitation", on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.document.url
+
+
 class TripInvitation(BaseModel):
     INVITE_SENT = "Invite Sent"
     STARTED = "Started"

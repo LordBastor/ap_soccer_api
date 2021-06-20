@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.utils.html import format_html
 
-from .models import Package, Trip, TripDocument, TripInvitation, TripTerms
+from .models import Package, Trip, TripDocument, TripInvitation, TripInvitationFile, TripTerms
 
 admin.site.register(TripDocument)
 
@@ -55,6 +55,12 @@ class TripAdmin(admin.ModelAdmin):
 admin.site.register(Trip, TripAdmin)
 
 
+class TripInvitationFileInline(admin.TabularInline):
+    model = TripInvitationFile
+    show_change_link = False
+    extra = 0
+
+
 class TripInvitationAdmin(admin.ModelAdmin):
     list_display = (
         "player",
@@ -80,6 +86,7 @@ class TripInvitationAdmin(admin.ModelAdmin):
     )
     can_delete = False
     can_add_related = False
+    inlines = [TripInvitationFileInline]
 
     def invoice_link(self, obj):
         return format_html("<a href='{url}' target='blank'>{url}</a>", url=obj.invoice_link)

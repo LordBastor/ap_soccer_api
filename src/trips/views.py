@@ -1,17 +1,15 @@
 from decimal import Decimal
 
-from django.utils import timezone
 from django.http import Http404
-from rest_framework.views import APIView
-
-from rest_framework.response import Response
-from rest_framework import status
-
-from trips.models import TripInvitation, TripTerms
-from trips.serializers import TripInvitationSerializer, TripTermSerializer
-
-from payments.models import Payment
+from django.utils import timezone
 from payments.invoice_utils import generate_invoice_for_trip_invite
+from payments.models import Payment
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from trips.models import TripInvitation, TripTerms
+from trips.serializers import (TripDocumentUploadSerializer,
+                               TripInvitationSerializer, TripTermSerializer)
 
 
 class TripInvitationView(APIView):
@@ -78,23 +76,19 @@ class TripInvitationView(APIView):
                         amount_due += traveler_price
                         amount_deposit += deposit_amount
 
-                        if (
-                            "additional_price" in companion
-                            and companion["additional_price"]
-                        ):
+                        if "additional_price" in companion and companion["additional_price"]:
                             amount_due += Decimal(companion["additional_price"])
 
                 payment = Payment.objects.create(
-                    amount_due=amount_due, amount_deposit=amount_deposit,
+                    amount_due=amount_due,
+                    amount_deposit=amount_deposit,
                 )
 
                 data["total_amount_due"] = amount_due
 
             if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
                 return Response(
-                    {
-                        "error": "Don't be cheeky, you can't push these statuses manually"
-                    },
+                    {"error": "Don't be cheeky, you can't push these statuses manually"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -133,3 +127,31 @@ class TripTermsView(APIView):
         serializer = TripTermSerializer(terms)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# ViewSets define the view behavior.
+class TripDocumentUploadView(APIView):
+    serializer_class = TripDocumentUploadSerializer
+
+    def post(self, request, uid):
+        try:
+            trip_invitation = TripInvitation.objects.get(uid=uid)
+        except TripInvitation.DoesNotExist:
+            return Response("Trip invitation {} does not exist".format(uid))
+
+        document = request.FILES.get("document")
+        content_type = document.content_type
+
+        if content_type != "application/pdf":
+            return Response("File is not a PDF", status=status.HTTP_400_BAD_REQUEST)
+
+        data = {"document": document, "trip_invitation": trip_invitation.pk}
+
+        self.serializer_class(data=data)
+
+        serializer = self.serializer_class(data=data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
