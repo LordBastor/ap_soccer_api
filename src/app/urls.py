@@ -9,3 +9,5 @@ urlpatterns = [
     path("trips/", include("trips.urls", namespace="trip")),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
+
+admin.site.site_url = None
