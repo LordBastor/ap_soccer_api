@@ -142,7 +142,7 @@ class TripDocumentUploadView(APIView):
         except TripInvitation.DoesNotExist:
             return Response("Trip invitation {} does not exist".format(uid))
 
-        document = request.FILES.get("document")
+        document = request.FILES.get("file")
         content_type = document.content_type
 
         allowed_content_type = [

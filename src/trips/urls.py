@@ -1,6 +1,5 @@
 from django.urls import path
-from trips.views import (TripDocumentUploadView, TripInvitationView,
-                         TripTermsView)
+from trips.views import TripDocumentUploadView, TripInvitationView, TripTermsView
 
 urlpatterns = [
     path(
