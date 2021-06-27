@@ -8,8 +8,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from trips.models import TripInvitation, TripTerms
-from trips.serializers import (TripDocumentUploadSerializer,
-                               TripInvitationSerializer, TripTermSerializer)
+from trips.serializers import (
+    TripDocumentUploadSerializer,
+    TripInvitationSerializer,
+    TripTermSerializer,
+)
 
 
 class TripInvitationView(APIView):
@@ -142,8 +145,16 @@ class TripDocumentUploadView(APIView):
         document = request.FILES.get("document")
         content_type = document.content_type
 
-        if content_type != "application/pdf":
-            return Response("File is not a PDF", status=status.HTTP_400_BAD_REQUEST)
+        allowed_content_type = [
+            "application/pdf",
+            "image/png",
+            "image/jpg",
+            "image/jpeg",
+            "image/gif",
+        ]
+
+        if content_type not in allowed_content_type:
+            return Response("File is not a PDF or Image", status=status.HTTP_400_BAD_REQUEST)
 
         data = {"document": document, "trip_invitation": trip_invitation.pk}
 
