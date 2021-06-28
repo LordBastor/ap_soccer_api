@@ -125,14 +125,10 @@ def generate_items(trip_invite, player, deposit_only):
     trip = trip_invite.trip
     trip_name = trip.name
     player_price = (
-        trip.deposit_amount
-        if deposit_only
-        else (trip.player_price - trip.deposit_amount)
+        trip.deposit_amount if deposit_only else (trip.player_price - trip.deposit_amount)
     )
     traveler_price = (
-        trip.deposit_amount
-        if deposit_only
-        else (trip.traveler_price - trip.deposit_amount)
+        trip.deposit_amount if deposit_only else (trip.traveler_price - trip.deposit_amount)
     )
     type_of_payment = "Deposit" if deposit_only else "Payment"
 
@@ -189,10 +185,8 @@ def generate_items(trip_invite, player, deposit_only):
                     first_name=traveler["first_name"],
                     last_name=traveler["last_name"],
                     trip_name=trip_name,
-                    package=" + ${} Additional Package".format(
-                        traveler["additional_price"]
-                    )
-                    if traveler["additional_price"]
+                    package=" + ${} Additional Package".format(traveler["additional_price"])
+                    if "additional_price" in traveler and traveler["additional_price"]
                     else "",
                 ),
                 "quantity": 1,
@@ -287,9 +281,7 @@ class PayPalClient:
 
         data = {"grant_type": "client_credentials"}
 
-        response = token_session.post(
-            "{}/v1/oauth2/token".format(self.root_url), data=data
-        )
+        response = token_session.post("{}/v1/oauth2/token".format(self.root_url), data=data)
 
         self.session = requests.Session()
         self.session.headers = {
