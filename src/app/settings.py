@@ -184,4 +184,4 @@ PAYPAL_SECRET = env("PAYPAL_SECRET")
 
 # URL where the front-end app is hosted
 # APP_URL = "http://localhost:3000/"
-APP_URL = "https://app-apsoccer-git-master-bastor.vercel.app/"
+APP_URL = "https://app.apsoccer.club/"
