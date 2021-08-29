@@ -222,22 +222,7 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
     configuration = generate_configuration(deposit_only)
     items = generate_items(trip_invite, player, deposit_only)
 
-    draft = client.create_invoice_draft(
-        detail=detail,
-        invoicer=invoicer,
-        recipients=recipients,
-        items=items,
-        configuration=configuration,
-    )
-
-    # Build invoice url and save it so we can expose it in next trip step
-    invoice_id = draft["href"].split("/")[-1]
-    paypal_url = (
-        "https://www.paypal.com/invoice/p/#"
-        if settings.ENVIRONMENT == "production"
-        else "https://www.sandbox.paypal.com/invoice/p/#"
-    )
-
+    # Extract all possible recipients
     if "companions" in trip_invite.form_information["companions"]:
         companion_emails = [
             companion["email"]
@@ -250,6 +235,23 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
             if "email" in player
         ]
     additional_recipients = [*companion_emails, *player_emails]
+
+    draft = client.create_invoice_draft(
+        detail=detail,
+        invoicer=invoicer,
+        recipients=recipients,
+        items=items,
+        configuration=configuration,
+        additional_recipients=additional_recipients,
+    )
+
+    # Build invoice url and save it so we can expose it in next trip step
+    invoice_id = draft["href"].split("/")[-1]
+    paypal_url = (
+        "https://www.paypal.com/invoice/p/#"
+        if settings.ENVIRONMENT == "production"
+        else "https://www.sandbox.paypal.com/invoice/p/#"
+    )
 
     client.send_invoice(invoice_id, additional_recipients)
 
@@ -328,7 +330,9 @@ class PayPalClient:
 
         return response
 
-    def create_invoice_draft(self, detail, invoicer, recipients, items, configuration):
+    def create_invoice_draft(
+        self, detail, invoicer, recipients, items, configuration, additional_recipients
+    ):
         url = "{}/v2/invoicing/invoices".format(self.root_url)
 
         data = {
@@ -337,6 +341,7 @@ class PayPalClient:
             "primary_recipients": recipients,
             "items": items,
             "configuration": configuration,
+            "additional_recipients": additional_recipients,
         }
 
         response = self.session.post(url, data=json.dumps(data))
