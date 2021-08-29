@@ -185,9 +185,28 @@ def generate_items(trip_invite, player, deposit_only):
                     first_name=traveler["first_name"],
                     last_name=traveler["last_name"],
                     trip_name=trip_name,
-                    package=" + ${} Additional Package".format(traveler["additional_price"])
-                    if "additional_price" in traveler and traveler["additional_price"]
-                    else "",
+                    package=" + ${} Additional Package".format(traveler["additional_price"]),
+                ),
+                "quantity": 1,
+                "unit_amount": {
+                    "currency_code": "USD",
+                    "value": str(
+                        Decimal(traveler_price) + Decimal(traveler["additional_price"])
+                    ),
+                },
+                "unit_of_measure": "QUANTITY",
+            }
+            if "additional_price" in traveler
+            else {
+                "name": (
+                    "{type_of_payment} for {first_name} {last_name} to accompany a "
+                    "player on {trip_name}.{package}"
+                ).format(
+                    type_of_payment=type_of_payment,
+                    first_name=traveler["first_name"],
+                    last_name=traveler["last_name"],
+                    trip_name=trip_name,
+                    package="",
                 ),
                 "quantity": 1,
                 "unit_amount": {"currency_code": "USD", "value": traveler_price},
@@ -223,17 +242,24 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
     items = generate_items(trip_invite, player, deposit_only)
 
     # Extract all possible recipients
+    companion_emails = []
+    player_emails = []
     if "companions" in trip_invite.form_information["companions"]:
-        companion_emails = [
-            companion["email"]
-            for companion in trip_invite.form_information["companions"]["companions"]
-            if "email" in companion
-        ]
-        player_emails = [
-            player["email"]
-            for player in trip_invite.form_information["companions"]["players"]
-            if "email" in player
-        ]
+        form_information = trip_invite.form_information
+
+        if "companions" in form_information:
+            companion_emails = [
+                companion["email"]
+                for companion in form_information["companions"]["companions"]
+                if "email" in companion
+            ]
+
+        if "players" in form_information:
+            player_emails = [
+                player["email"]
+                for player in form_information["companions"]["players"]
+                if "email" in player
+            ]
     additional_recipients = [*companion_emails, *player_emails]
 
     draft = client.create_invoice_draft(
