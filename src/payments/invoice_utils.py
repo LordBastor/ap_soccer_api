@@ -238,13 +238,18 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
         else "https://www.sandbox.paypal.com/invoice/p/#"
     )
 
-    additional_recipients = []
     if "companions" in trip_invite.form_information["companions"]:
-        additional_recipients = [
+        companion_emails = [
             companion["email"]
             for companion in trip_invite.form_information["companions"]["companions"]
             if "email" in companion
         ]
+        player_emails = [
+            player["email"]
+            for player in trip_invite.form_information["companions"]["players"]
+            if "email" in player
+        ]
+    additional_recipients = [*companion_emails, *player_emails]
 
     client.send_invoice(invoice_id, additional_recipients)
 
