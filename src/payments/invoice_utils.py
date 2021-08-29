@@ -233,7 +233,7 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
     # Build invoice url and save it so we can expose it in next trip step
     invoice_id = draft["href"].split("/")[-1]
     paypal_url = (
-        "https://www.sandbox.paypal.com/invoice/p/#"
+        "https://www.paypal.com/invoice/p/#"
         if settings.ENVIRONMENT == "production"
         else "https://www.sandbox.paypal.com/invoice/p/#"
     )
