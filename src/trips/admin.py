@@ -16,14 +16,6 @@ class PackageAdmin(admin.ModelAdmin):
 admin.site.register(Package, PackageAdmin)
 
 
-class TripDocumentInline(admin.TabularInline):
-    model = Trip.email_files.through
-
-
-class TripDepositFilesInline(admin.TabularInline):
-    model = Trip.deposit_files.through
-
-
 class TripAdminForm(ModelForm):
     def clean_live(self):
         # Publishing a Trip is only possible if it has from-to dates
@@ -49,7 +41,7 @@ class TripAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("live",)
     form = TripAdminForm
-    inlines = (TripDocumentInline, TripDepositFilesInline)
+    filter_horizontal = ("email_files", "deposit_files")
 
 
 admin.site.register(Trip, TripAdmin)
