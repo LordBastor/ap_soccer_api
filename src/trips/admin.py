@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django.utils.html import format_html
+from django.urls import reverse
 
 from .models import Package, Trip, TripDocument, TripInvitation, TripInvitationFile, TripTerms
 
@@ -69,9 +70,10 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "invoice_link",
         "payment",
         "form_information",
-        "terms",
         "terms_accepted_on",
+        "accepted_terms",
     )
+    exclude = ("terms",)
     list_filter = (
         "status",
         "trip__name",
@@ -83,6 +85,15 @@ class TripInvitationAdmin(admin.ModelAdmin):
     def invoice_link(self, obj):
         return format_html("<a href='{url}' target='blank'>{url}</a>", url=obj.invoice_link)
 
+    def accepted_terms(self, obj):
+        change_url = reverse("admin:trips_tripterms_change", args=[obj.terms.id])
+        return format_html(
+            '<a href="{change_url}" target="blank">{model_string}</a>'.format(
+                change_url=change_url, model_string=obj.terms.__str__()
+            )
+        )
+
+    accepted_terms.short_description = "Terms the user agreed to"
     invoice_link.short_description = "PayPal Invoice URL"
 
 

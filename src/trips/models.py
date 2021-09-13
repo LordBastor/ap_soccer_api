@@ -124,3 +124,9 @@ class TripInvitation(BaseModel):
         if self.payment and self.payment.invoice_url:
             return self.payment.invoice_url
         return "Not submitted"
+
+    @property
+    def accepted_terms(self):
+        if self.terms:
+            return self.terms.id
+        return "Terms not accepted yet"
