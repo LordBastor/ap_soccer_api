@@ -44,6 +44,14 @@ class TripAdmin(admin.ModelAdmin):
     form = TripAdminForm
     filter_horizontal = ("email_files", "deposit_files")
 
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        form = super().get_form(request, obj, change, **kwargs)
+        form.base_fields["email_files"].label = "Files that get attched to the email"
+        form.base_fields[
+            "deposit_files"
+        ].label = "Trip documents available after deposit is paid"
+        return form
+
 
 admin.site.register(Trip, TripAdmin)
 
