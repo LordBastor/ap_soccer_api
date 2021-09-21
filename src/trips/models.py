@@ -19,6 +19,17 @@ class TripTerms(BaseModel):
         return "Terms Created On: {}".format(self.created_date)
 
 
+class TripCustomTerm(BaseModel):
+    terms_name = models.CharField(max_length=30)
+    custom_terms = models.TextField()
+
+    def __str__(self):
+        return self.terms_name
+
+    class Meta:
+        verbose_name_plural = "Trip Custom Terms"
+
+
 class Package(BaseModel):
     name = models.CharField(max_length=30)
     price = models.DecimalField(max_digits=7, decimal_places=2)
@@ -43,6 +54,13 @@ class Trip(BaseModel):
     email_files = models.ManyToManyField("trips.TripDocument", blank=True)
     deposit_files = models.ManyToManyField(
         "trips.TripDocument", blank=True, related_name="deposit_files"
+    )
+    additional_terms = models.ForeignKey(
+        "trips.TripCustomTerm",
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        help_text="Selected additional terms and conditions will appear on T&C step",
     )
 
     def __str__(self):
@@ -106,6 +124,9 @@ class TripInvitation(BaseModel):
 
     terms = models.ForeignKey(
         "trips.TripTerms", on_delete=models.PROTECT, blank=True, null=True
+    )
+    additional_terms = models.ForeignKey(
+        "trips.TripCustomTerm", on_delete=models.PROTECT, blank=True, null=True
     )
     terms_signature = models.ImageField(upload_to="images/", blank=True, null=True)
     terms_accepted_on = models.DateTimeField(null=True)

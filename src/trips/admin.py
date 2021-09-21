@@ -4,7 +4,15 @@ from django.forms import ModelForm
 from django.utils.html import format_html
 from django.urls import reverse
 
-from .models import Package, Trip, TripDocument, TripInvitation, TripInvitationFile, TripTerms
+from .models import (
+    Package,
+    Trip,
+    TripDocument,
+    TripInvitation,
+    TripInvitationFile,
+    TripTerms,
+    TripCustomTerm,
+)
 
 admin.site.register(TripDocument)
 
@@ -81,7 +89,10 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "terms_accepted_on",
         "accepted_terms",
     )
-    exclude = ("terms",)
+    exclude = (
+        "terms",
+        "additional_terms",
+    )
     list_filter = (
         "status",
         "trip__name",
@@ -101,7 +112,18 @@ class TripInvitationAdmin(admin.ModelAdmin):
             )
         )
 
+    def accepted_additional_terms(self, obj):
+        change_url = reverse(
+            "admin:trips_tripcustomterm_change", args=[obj.additional_terms.id]
+        )
+        return format_html(
+            '<a href="{change_url}" target="blank">{model_string}</a>'.format(
+                change_url=change_url, model_string=obj.additional_terms.__str__()
+            )
+        )
+
     accepted_terms.short_description = "Terms the user agreed to"
+    accepted_additional_terms.short_description = "Additional Terms the user agreed to"
     invoice_link.short_description = "PayPal Invoice URL"
 
 
@@ -128,3 +150,28 @@ class TripTermsAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TripTerms, TripTermsAdmin)
+
+
+class TripCustomTermAdmin(admin.ModelAdmin):
+    list_filter = ("terms_name",)
+    list_display = ("terms_name", "custom_terms")
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def change_view(self, request, object_id=None, form_url="", extra_context=None):
+        # use extra_context to disable the other save (and/or delete) buttons
+        extra_context = dict(show_save=False, show_save_and_continue=False, show_delete=False)
+        # get a reference to the original has_add_permission method
+        has_add_permission = self.has_add_permission
+        # monkey patch: temporarily override has_add_permission so it returns False
+        self.has_add_permission = lambda __: False
+        # get the TemplateResponse from super (python 3)
+        template_response = super().change_view(request, object_id, form_url, extra_context)
+        # restore the original has_add_permission (otherwise we cannot add anymore)
+        self.has_add_permission = has_add_permission
+        # return the result
+        return template_response
+
+
+admin.site.register(TripCustomTerm, TripCustomTermAdmin)
