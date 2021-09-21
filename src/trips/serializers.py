@@ -16,7 +16,7 @@ from trips.models import (
 class TripCustomTermSerializer(serializers.ModelSerializer):
     class Meta:
         model = TripCustomTerm
-        fields = ["terms_name", "custom_terms"]
+        fields = ["id", "terms_name", "custom_terms"]
 
 
 class PackageSerializer(serializers.ModelSerializer):
@@ -75,6 +75,7 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "terms",
             "terms_signature",
             "terms_accepted_on",
+            "additional_terms",
             "is_valid",
             "invoice_link",
         ]

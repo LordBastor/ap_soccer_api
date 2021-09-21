@@ -88,6 +88,7 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "form_information",
         "terms_accepted_on",
         "accepted_terms",
+        "accepted_additional_terms",
     )
     exclude = (
         "terms",
