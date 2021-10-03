@@ -22,11 +22,7 @@ class TripCustomTermSerializer(serializers.ModelSerializer):
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
-        fields = [
-            "name",
-            "price",
-            "description",
-        ]
+        fields = ["name", "price", "description"]
 
 
 class TripDocumentSerializer(serializers.ModelSerializer):
@@ -74,6 +70,7 @@ class TripInvitationSerializer(serializers.ModelSerializer):
             "form_information",
             "terms",
             "terms_signature",
+            "terms_names",
             "terms_accepted_on",
             "additional_terms",
             "is_valid",

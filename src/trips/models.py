@@ -80,7 +80,9 @@ def get_trip_invitation_file_path(instance, filename):
 
 class TripInvitationFile(BaseModel):
     document = models.FileField(upload_to=get_trip_invitation_file_path)
-    trip_invitation = models.ForeignKey("trips.TripInvitation", on_delete=models.PROTECT)
+    trip_invitation = models.ForeignKey(
+        "trips.TripInvitation", on_delete=models.PROTECT
+    )
 
     def __str__(self):
         return self.document.url
@@ -109,7 +111,9 @@ class TripInvitation(BaseModel):
 
     # Relations and status
     uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=INVITE_SENT)
+    status = models.CharField(
+        max_length=30, choices=STATUS_CHOICES, default=INVITE_SENT
+    )
     player = models.ForeignKey("players.Player", on_delete=models.PROTECT)
     trip = models.ForeignKey("trips.Trip", on_delete=models.PROTECT)
     payment = models.ForeignKey(
@@ -129,6 +133,7 @@ class TripInvitation(BaseModel):
         "trips.TripCustomTerm", on_delete=models.PROTECT, blank=True, null=True
     )
     terms_signature = models.ImageField(upload_to="images/", blank=True, null=True)
+    terms_names = models.CharField(max_length=30, blank=True, null=True)
     terms_accepted_on = models.DateTimeField(null=True)
 
     def __str__(self):
