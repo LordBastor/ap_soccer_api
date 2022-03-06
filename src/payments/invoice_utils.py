@@ -181,53 +181,45 @@ def generate_items(trip_invite, player, deposit_only):
     )
 
     traveler_data = []
+    room_upgrades = []
     if "companions" in additional_people:
-        traveler_data = [
-            {
+        for traveler in additional_people["companions"]:
+            companion_line = {
                 "name": (
                     "{type_of_payment} for {first_name} {last_name} to accompany a "
-                    "player on {trip_name}.{package}"
+                    "player on {trip_name}"
                 ).format(
                     type_of_payment=type_of_payment,
                     first_name=traveler["first_name"],
                     last_name=traveler["last_name"],
                     trip_name=trip_name,
-                    package=" + ${} Additional Package".format(
-                        traveler["additional_price"]
-                    ),
-                ),
-                "quantity": 1,
-                "unit_amount": {
-                    "currency_code": "USD",
-                    "value": str(Decimal(traveler_price))
-                    if deposit_only
-                    else str(
-                        Decimal(traveler_price)
-                        + (Decimal(traveler["additional_price"]) * Decimal("1.03"))
-                    ),
-                },
-                "unit_of_measure": "QUANTITY",
-            }
-            if "additional_price" in traveler
-            else {
-                "name": (
-                    "{type_of_payment} for {first_name} {last_name} to accompany a "
-                    "player on {trip_name}.{package}"
-                ).format(
-                    type_of_payment=type_of_payment,
-                    first_name=traveler["first_name"],
-                    last_name=traveler["last_name"],
-                    trip_name=trip_name,
-                    package="",
                 ),
                 "quantity": 1,
                 "unit_amount": {"currency_code": "USD", "value": traveler_price},
                 "unit_of_measure": "QUANTITY",
             }
-            for traveler in additional_people["companions"]
-        ]
+            traveler_data.append(companion_line)
+
+            # Add room upgrades if appicable
+            if not deposit_only and traveler["additional_price"]:
+                room_upgrade_line = {
+                    "name": "Room Upgrade for {first_name} {last_name}".format(
+                        first_name=traveler["first_name"],
+                        last_name=traveler["last_name"],
+                    ),
+                    "quantity": 1,
+                    "unit_amount": {
+                        "currency_code": "USD",
+                        "value": str(
+                            Decimal(traveler["additional_price"]) * Decimal("1.03")
+                        ),
+                    },
+                    "unit_of_measure": "QUANTITY",
+                }
+                room_upgrades.append(room_upgrade_line)
 
     player_data.extend(traveler_data)
+    player_data.extend(room_upgrades)
     return player_data
 
 
