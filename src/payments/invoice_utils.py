@@ -198,7 +198,7 @@ def generate_items(trip_invite, player, deposit_only):
                     "currency_code": "USD",
                     "value": str(
                         Decimal(traveler_price)
-                        + Decimal(traveler["additional_price"] * Decimal("1.03"))
+                        + (Decimal(traveler["additional_price"]) * Decimal("1.03"))
                     ),
                 },
                 "unit_of_measure": "QUANTITY",
