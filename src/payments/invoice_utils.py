@@ -41,7 +41,7 @@ def generate_detail(invoice_number, today, deposit_only, due_date):
 
     detail = {
         "invoice_number": invoice_number,
-        "reference": "deal-ref",
+        "reference": "APS-{}".format(invoice_number),
         "invoice_date": str(today.date()),
         "currency_code": "USD",
         "note": note,
@@ -65,11 +65,11 @@ def generate_invoicer():
     invoicer = {
         "business_name": "AP Soccer Enterprises, LLC",
         "address": {
-            "address_line_1": "6339 Hobson St. N. E.",
+            "address_line_1": "",
             "address_line_2": "",
             "admin_area_2": "Saint Petersburg",
             "admin_area_1": "FL",
-            "postal_code": "33702",
+            "postal_code": "",
             "country_code": "US",
         },
         "email_address": invoicer_email_address,
@@ -125,10 +125,14 @@ def generate_items(trip_invite, player, deposit_only):
     trip = trip_invite.trip
     trip_name = trip.name
     player_price = (
-        trip.deposit_amount if deposit_only else (trip.player_price - trip.deposit_amount)
+        trip.deposit_amount
+        if deposit_only
+        else (trip.player_price - trip.deposit_amount)
     )
     traveler_price = (
-        trip.deposit_amount if deposit_only else (trip.traveler_price - trip.deposit_amount)
+        trip.deposit_amount
+        if deposit_only
+        else (trip.traveler_price - trip.deposit_amount)
     )
     type_of_payment = "Deposit" if deposit_only else "Payment"
 
@@ -185,13 +189,16 @@ def generate_items(trip_invite, player, deposit_only):
                     first_name=traveler["first_name"],
                     last_name=traveler["last_name"],
                     trip_name=trip_name,
-                    package=" + ${} Additional Package".format(traveler["additional_price"]),
+                    package=" + ${} Additional Package".format(
+                        traveler["additional_price"]
+                    ),
                 ),
                 "quantity": 1,
                 "unit_amount": {
                     "currency_code": "USD",
                     "value": str(
-                        Decimal(traveler_price) + Decimal(traveler["additional_price"])
+                        Decimal(traveler_price)
+                        + Decimal(traveler["additional_price"] * Decimal("1.03"))
                     ),
                 },
                 "unit_of_measure": "QUANTITY",
@@ -314,7 +321,9 @@ class PayPalClient:
 
         data = {"grant_type": "client_credentials"}
 
-        response = token_session.post("{}/v1/oauth2/token".format(self.root_url), data=data)
+        response = token_session.post(
+            "{}/v1/oauth2/token".format(self.root_url), data=data
+        )
 
         self.session = requests.Session()
         self.session.headers = {
