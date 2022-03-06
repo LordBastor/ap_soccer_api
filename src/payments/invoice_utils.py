@@ -14,8 +14,8 @@ def generate_detail(invoice_number, today, deposit_only, due_date):
 
     note = (
         "All online transactions are subject to a 3% Processing fee.\n"
-        "In order to avoid those fees, you can pay the rest of the the "
-        "remaining balance via check, money order or Zelle.\n"
+        "After the deposits are paid, you can use a check, money order, or Zelle "
+        "to pay the rest of the amount for the trip. This will save you the 3 % Online Processing fee.\n"
         "For Check/money orders, please make them payable to AP Soccer LLC "
         "and mail them to: AP Soccer 6339 Hobson St. N. E. St. Petersburg, FL 33702.\n"
         "For Zelle, please use support@americanpremiersoccer.com for all payments to "
@@ -24,6 +24,9 @@ def generate_detail(invoice_number, today, deposit_only, due_date):
 
     if deposit_only:
         note = (
+            "Note to customer:\n"
+            "All payments, including mailed checks, have to be received by "
+            "the due date.\n"
             "All online transactions are subject to a 3% Processing fee "
             "($500.00 + 3% Processing Fee $15.00 = $515.00).\n"
             "In order to avoid those fees, you can pay the rest of the amount, "
@@ -196,7 +199,9 @@ def generate_items(trip_invite, player, deposit_only):
                 "quantity": 1,
                 "unit_amount": {
                     "currency_code": "USD",
-                    "value": str(
+                    "value": str(Decimal(traveler_price))
+                    if deposit_only
+                    else str(
                         Decimal(traveler_price)
                         + (Decimal(traveler["additional_price"]) * Decimal("1.03"))
                     ),
