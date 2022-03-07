@@ -128,14 +128,10 @@ def generate_items(trip_invite, player, deposit_only):
     trip = trip_invite.trip
     trip_name = trip.name
     player_price = (
-        trip.deposit_amount
-        if deposit_only
-        else (trip.player_price - trip.deposit_amount)
+        trip.deposit_amount if deposit_only else (trip.player_price - trip.deposit_amount)
     )
     traveler_price = (
-        trip.deposit_amount
-        if deposit_only
-        else (trip.traveler_price - trip.deposit_amount)
+        trip.deposit_amount if deposit_only else (trip.traveler_price - trip.deposit_amount)
     )
     type_of_payment = "Deposit" if deposit_only else "Payment"
 
@@ -201,7 +197,11 @@ def generate_items(trip_invite, player, deposit_only):
             traveler_data.append(companion_line)
 
             # Add room upgrades if appicable
-            if not deposit_only and traveler["additional_price"]:
+            if (
+                not deposit_only
+                and "additional_price" in traveler
+                and traveler["additional_price"]
+            ):
                 room_upgrade_line = {
                     "name": "Room Upgrade for {first_name} {last_name}".format(
                         first_name=traveler["first_name"],
@@ -210,9 +210,7 @@ def generate_items(trip_invite, player, deposit_only):
                     "quantity": 1,
                     "unit_amount": {
                         "currency_code": "USD",
-                        "value": str(
-                            Decimal(traveler["additional_price"]) * Decimal("1.03")
-                        ),
+                        "value": str(Decimal(traveler["additional_price"]) * Decimal("1.03")),
                     },
                     "unit_of_measure": "QUANTITY",
                 }
@@ -318,9 +316,7 @@ class PayPalClient:
 
         data = {"grant_type": "client_credentials"}
 
-        response = token_session.post(
-            "{}/v1/oauth2/token".format(self.root_url), data=data
-        )
+        response = token_session.post("{}/v1/oauth2/token".format(self.root_url), data=data)
 
         self.session = requests.Session()
         self.session.headers = {
