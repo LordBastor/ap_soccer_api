@@ -22,13 +22,17 @@ def record_payment(request, *args, **kwargs):
 
     if amount is None or method is None:
         messages.add_message(
-            request, messages.ERROR, "Missing payment amount and/or method data",
+            request,
+            messages.ERROR,
+            "Missing payment amount and/or method data",
         )
         return HttpResponseRedirect(reverse("admin:payments_payment_changelist"))
 
     if invoice_ids is None:
         messages.add_message(
-            request, messages.ERROR, "Missing invoice data",
+            request,
+            messages.ERROR,
+            "Missing invoice data",
         )
         return HttpResponseRedirect(reverse("admin:payments_payment_changelist"))
 
@@ -91,9 +95,9 @@ class RecordAPIPayment(APIView):
 
         # Let's grab the total amount paid so far
         payment_object = invoice_object.payment
-        total_amount_paid = payment_object.paypalinvoice_set.aggregate(
-            Sum("amount_paid")
-        )["amount_paid__sum"]
+        total_amount_paid = payment_object.paypalinvoice_set.aggregate(Sum("amount_paid"))[
+            "amount_paid__sum"
+        ]
 
         # Get the trip invite
         trip_invitation = invoice_object.payment.tripinvitation_set.all()[0]
@@ -107,7 +111,8 @@ class RecordAPIPayment(APIView):
 
         # Moved this outside of the if/elif so we don't fail to update
         # the payment if invoice creation fails for some reason
-        if trip_invitation.status == "Deposit Paid":
+        existing_invoice_count = trip_invite.payment.paypalinvoice_set.count()
+        if trip_invitation.status == "Deposit Paid" and existing_invoice_count == 1:
             # Create and send leftover invoice
             generate_invoice_for_trip_invite(trip_invitation, False)
 
