@@ -253,16 +253,16 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
             companion_emails = [
                 companion["email"]
                 for companion in form_information["companions"]["companions"]
-                if "email" in companion
+                if "email" in companion and companion["email"] != player["email"]
             ]
 
         if "players" in form_information:
             player_emails = [
                 player["email"]
                 for player in form_information["companions"]["players"]
-                if "email" in player
+                if "email" in companion and companion["email"] != player["email"]
             ]
-    additional_recipients = [*companion_emails, *player_emails]
+    additional_recipients = list(set([*companion_emails, *player_emails]))
 
     draft = client.create_invoice_draft(
         detail=detail,
