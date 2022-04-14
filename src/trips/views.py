@@ -68,19 +68,23 @@ class TripInvitationView(APIView):
                 amount_due = player_price
                 amount_deposit = deposit_amount
 
-                companion_data = data["form_information"]["companions"]
+                companion_data = data["form_information"].get("companions", None)
 
-                if "players" in companion_data and companion_data["players"]:
-                    amount_due += player_price * len(companion_data["players"])
-                    amount_deposit += deposit_amount * len(companion_data["players"])
+                if companion_data:
+                    if "players" in companion_data and companion_data["players"]:
+                        amount_due += player_price * len(companion_data["players"])
+                        amount_deposit += deposit_amount * len(companion_data["players"])
 
-                if "companions" in companion_data and companion_data["companions"]:
-                    for companion in companion_data["companions"]:
-                        amount_due += traveler_price
-                        amount_deposit += deposit_amount
+                    if "companions" in companion_data and companion_data["companions"]:
+                        for companion in companion_data["companions"]:
+                            amount_due += traveler_price
+                            amount_deposit += deposit_amount
 
-                        if "additional_price" in companion and companion["additional_price"]:
-                            amount_due += Decimal(companion["additional_price"])
+                            if (
+                                "additional_price" in companion
+                                and companion["additional_price"]
+                            ):
+                                amount_due += Decimal(companion["additional_price"])
 
                 payment = Payment.objects.create(
                     amount_due=amount_due,

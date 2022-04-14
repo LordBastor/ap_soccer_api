@@ -139,12 +139,12 @@ def generate_items(trip_invite, player, deposit_only):
     player_price = str(player_price * Decimal("1.03"))
     traveler_price = str(traveler_price * Decimal("1.03"))
 
-    additional_people = trip_invite.form_information["companions"]
+    additional_people = trip_invite.form_information.get("companions", None)
 
     player_data = []
 
     # Conditionally compute additional players
-    if "players" in additional_people:
+    if additional_people and "players" in additional_people:
         player_data = [
             {
                 "name": "{type_of_payment} for {first_name} {last_name} to attend {trip_name}".format(
@@ -178,7 +178,7 @@ def generate_items(trip_invite, player, deposit_only):
 
     traveler_data = []
     room_upgrades = []
-    if "companions" in additional_people:
+    if additional_people and "companions" in additional_people:
         for traveler in additional_people["companions"]:
             companion_line = {
                 "name": (
@@ -246,7 +246,10 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
     # Extract all possible recipients
     companion_emails = []
     player_emails = []
-    if "companions" in trip_invite.form_information["companions"]:
+    if (
+        "companions" in trip_invite.form_information
+        and "companions" in trip_invite.form_information["companions"]
+    ):
         form_information = trip_invite.form_information
 
         if "companions" in form_information:
