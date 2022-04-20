@@ -73,7 +73,9 @@ class TripInvitationView(APIView):
                 if companion_data:
                     if "players" in companion_data and companion_data["players"]:
                         amount_due += player_price * len(companion_data["players"])
-                        amount_deposit += deposit_amount * len(companion_data["players"])
+                        amount_deposit += deposit_amount * len(
+                            companion_data["players"]
+                        )
 
                     if "companions" in companion_data and companion_data["companions"]:
                         for companion in companion_data["companions"]:
@@ -95,7 +97,9 @@ class TripInvitationView(APIView):
 
             if future_status in [TripInvitation.DEPOSIT_PAID, TripInvitation.PAID]:
                 return Response(
-                    {"error": "Don't be cheeky, you can't push these statuses manually"},
+                    {
+                        "error": "Don't be cheeky, you can't push these statuses manually"
+                    },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
@@ -113,8 +117,6 @@ class TripInvitationView(APIView):
             if future_status == TripInvitation.TERMS_AGREED:
                 generate_invoice_for_trip_invite(trip_invite, True)
 
-                data["terms_accepted_on"] = timezone.now()
-                data["status"] = TripInvitation.INVOICE_SENT
                 trip_invite.terms_accepted_on = timezone.now()
                 trip_invite.status = TripInvitation.INVOICE_SENT
 
@@ -158,7 +160,9 @@ class TripDocumentUploadView(APIView):
         ]
 
         if content_type not in allowed_content_type:
-            return Response("File is not a PDF or Image", status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                "File is not a PDF or Image", status=status.HTTP_400_BAD_REQUEST
+            )
 
         data = {"document": document, "trip_invitation": trip_invitation.pk}
 

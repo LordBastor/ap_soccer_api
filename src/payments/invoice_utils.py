@@ -128,10 +128,14 @@ def generate_items(trip_invite, player, deposit_only):
     trip = trip_invite.trip
     trip_name = trip.name
     player_price = (
-        trip.deposit_amount if deposit_only else (trip.player_price - trip.deposit_amount)
+        trip.deposit_amount
+        if deposit_only
+        else (trip.player_price - trip.deposit_amount)
     )
     traveler_price = (
-        trip.deposit_amount if deposit_only else (trip.traveler_price - trip.deposit_amount)
+        trip.deposit_amount
+        if deposit_only
+        else (trip.traveler_price - trip.deposit_amount)
     )
     type_of_payment = "Deposit" if deposit_only else "Payment"
 
@@ -210,7 +214,9 @@ def generate_items(trip_invite, player, deposit_only):
                     "quantity": 1,
                     "unit_amount": {
                         "currency_code": "USD",
-                        "value": str(Decimal(traveler["additional_price"]) * Decimal("1.03")),
+                        "value": str(
+                            Decimal(traveler["additional_price"]) * Decimal("1.03")
+                        ),
                     },
                     "unit_of_measure": "QUANTITY",
                 }
@@ -252,14 +258,14 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
     ):
         form_information = trip_invite.form_information
 
-        if "companions" in form_information:
+        if "companions" in form_information and form_information["companions"]:
             companion_emails = [
                 companion["email"]
                 for companion in form_information["companions"]["companions"]
                 if "email" in companion and companion["email"] != player["email"]
             ]
 
-        if "players" in form_information:
+        if "players" in form_information and form_information["players"]:
             player_emails = [
                 player["email"]
                 for player in form_information["companions"]["players"]
@@ -319,7 +325,9 @@ class PayPalClient:
 
         data = {"grant_type": "client_credentials"}
 
-        response = token_session.post("{}/v1/oauth2/token".format(self.root_url), data=data)
+        response = token_session.post(
+            "{}/v1/oauth2/token".format(self.root_url), data=data
+        )
 
         self.session = requests.Session()
         self.session.headers = {
