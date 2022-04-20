@@ -41,10 +41,7 @@ class PlayerAdmin(ImportExportModelAdmin):
         "last_name",
         "position",
         "email",
-        "address",
         "date_of_birth",
-        "city",
-        "state",
         "id_clinic",
     )
     search_fields = ("first_name", "last_name", "id_clinic")

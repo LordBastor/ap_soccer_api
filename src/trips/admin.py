@@ -77,10 +77,10 @@ class TripInvitationAdmin(admin.ModelAdmin):
         "status",
         "created_date",
         "form_information",
-        "uid",
+        "uid_link",
     )
     readonly_fields = (
-        "uid",
+        "uid_link",
         "status",
         "total_amount_due",
         "invoice_link",
@@ -119,6 +119,11 @@ class TripInvitationAdmin(admin.ModelAdmin):
                 change_url=change_url, model_string=obj.additional_terms.__str__()
             )
         )
+
+    def uid_link(self, obj):
+        uid = obj.uid
+        url = "https://app.apsoccer.club/?uid={uid}".format(uid=uid)
+        return format_html("<a href='{url}' target='blank'>{uid}</a>", url=url, uid=uid)
 
     accepted_terms.short_description = "Terms the user agreed to"
     accepted_additional_terms.short_description = "Additional Terms the user agreed to"
