@@ -67,6 +67,8 @@ admin.site.register(Trip, TripAdmin)
 class TripInvitationAdmin(admin.ModelAdmin):
     model = TripInvitationFile
 
+    list_display = ("document", "trip_invitation")
+
 
 admin.site.register(TripInvitationFile, TripInvitationAdmin)
 
