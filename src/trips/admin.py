@@ -65,10 +65,6 @@ admin.site.register(Trip, TripAdmin)
 
 
 class TripInvitationAdmin(admin.ModelAdmin):
-    class Meta:
-        verbose_name = "Player Upload"
-        verbose_name_plural = "Player Uploads"
-
     model = TripInvitationFile
 
     list_display = ("document", "trip_invitation", "created_date")
