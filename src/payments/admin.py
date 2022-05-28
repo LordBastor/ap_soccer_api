@@ -37,6 +37,7 @@ class PayPalInvoiceAdmin(admin.ModelAdmin):
         "invoice_number",
         "invoice_url",
         "invoice_type",
+        "payment__trip_invite",
     )
     actions = ["record_payment"]
 
