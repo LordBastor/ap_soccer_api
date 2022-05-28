@@ -64,6 +64,13 @@ class TripAdmin(admin.ModelAdmin):
 admin.site.register(Trip, TripAdmin)
 
 
+class TripInvitationAdmin(admin.ModelAdmin):
+    model = TripInvitationFile
+
+
+admin.site.register(TripInvitationFile, TripInvitationAdmin)
+
+
 class TripInvitationFileInline(admin.TabularInline):
     model = TripInvitationFile
     show_change_link = False
@@ -98,9 +105,7 @@ class TripInvitationAdmin(admin.ModelAdmin):
     inlines = [TripInvitationFileInline]
 
     def invoice_link(self, obj):
-        return format_html(
-            "<a href='{url}' target='blank'>{url}</a>", url=obj.invoice_link
-        )
+        return format_html("<a href='{url}' target='blank'>{url}</a>", url=obj.invoice_link)
 
     def accepted_terms(self, obj):
         change_url = reverse("admin:trips_tripterms_change", args=[obj.terms.id])
@@ -134,17 +139,13 @@ class TripTermsAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id=None, form_url="", extra_context=None):
         # use extra_context to disable the other save (and/or delete) buttons
-        extra_context = dict(
-            show_save=False, show_save_and_continue=False, show_delete=False
-        )
+        extra_context = dict(show_save=False, show_save_and_continue=False, show_delete=False)
         # get a reference to the original has_add_permission method
         has_add_permission = self.has_add_permission
         # monkey patch: temporarily override has_add_permission so it returns False
         self.has_add_permission = lambda __: False
         # get the TemplateResponse from super (python 3)
-        template_response = super().change_view(
-            request, object_id, form_url, extra_context
-        )
+        template_response = super().change_view(request, object_id, form_url, extra_context)
         # restore the original has_add_permission (otherwise we cannot add anymore)
         self.has_add_permission = has_add_permission
         # return the result
@@ -163,17 +164,13 @@ class TripCustomTermAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id=None, form_url="", extra_context=None):
         # use extra_context to disable the other save (and/or delete) buttons
-        extra_context = dict(
-            show_save=False, show_save_and_continue=False, show_delete=False
-        )
+        extra_context = dict(show_save=False, show_save_and_continue=False, show_delete=False)
         # get a reference to the original has_add_permission method
         has_add_permission = self.has_add_permission
         # monkey patch: temporarily override has_add_permission so it returns False
         self.has_add_permission = lambda __: False
         # get the TemplateResponse from super (python 3)
-        template_response = super().change_view(
-            request, object_id, form_url, extra_context
-        )
+        template_response = super().change_view(request, object_id, form_url, extra_context)
         # restore the original has_add_permission (otherwise we cannot add anymore)
         self.has_add_permission = has_add_permission
         # return the result
