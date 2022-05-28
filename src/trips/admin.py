@@ -69,6 +69,8 @@ class TripInvitationAdmin(admin.ModelAdmin):
 
     list_display = ("document", "trip_invitation", "created_date")
 
+    list_filter = ("trip_invitation",)
+
 
 admin.site.register(TripInvitationFile, TripInvitationAdmin)
 
