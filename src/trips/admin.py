@@ -72,7 +72,7 @@ class TripInvitationFileAdmin(admin.ModelAdmin):
     list_filter = ("trip_invitation__trip",)
 
 
-admin.site.register(TripInvitationFile, TripInvitationAdmin)
+admin.site.register(TripInvitationFile, TripInvitationFileAdmin)
 
 
 class TripInvitationFileInline(admin.TabularInline):
