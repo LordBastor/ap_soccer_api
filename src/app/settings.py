@@ -27,6 +27,9 @@ SECRET_KEY = env(
     "DJANGO_SECRET_KEY", default="8#ubdv*jh_1u(6m4)^s^*pdo!&y_#jz)vv%5cp%8^*&%ztttxq"
 )
 
+#
+FILE_UPLOAD_PERMISSIONS = 0o755
+
 ENVIRONMENT = env("ENV", default="development")
 
 # SECURITY WARNING: don't run with debug turned on in production!

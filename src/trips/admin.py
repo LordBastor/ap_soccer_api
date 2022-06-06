@@ -71,6 +71,11 @@ class TripInvitationFileAdmin(admin.ModelAdmin):
 
     list_filter = ("trip_invitation__trip",)
 
+    def document(self, obj):
+        return format_html(
+            "<a href='{document}' target='blank'>{document}</a>", document=obj.document.url
+        )
+
 
 admin.site.register(TripInvitationFile, TripInvitationFileAdmin)
 
