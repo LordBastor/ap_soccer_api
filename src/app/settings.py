@@ -33,7 +33,7 @@ FILE_UPLOAD_PERMISSIONS = 0o755
 ENVIRONMENT = env("ENV", default="development")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DJANGO_DEBUG", False)
+DEBUG = env.bool(True, False)
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", [])
 
@@ -151,16 +151,16 @@ MEDIA_URL = "/uploads/"
 
 # Email settings
 
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-    DEFAULT_FROM_EMAIL = "no-reply@localhost"
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = env("EMAIL_HOST")
-    EMAIL_PORT = env("EMAIL_PORT")
-    EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-    EMAIL_USE_SSL = env("EMAIL_USE_SSL")
+# if DEBUG:
+#     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+#     DEFAULT_FROM_EMAIL = "no-reply@localhost"
+# else:
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_SSL = env("EMAIL_USE_SSL")
 
 # Django Rest Framework Settings
 
