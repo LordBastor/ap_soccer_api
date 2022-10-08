@@ -33,7 +33,7 @@ FILE_UPLOAD_PERMISSIONS = 0o755
 ENVIRONMENT = env("ENV", default="development")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool(True, False)
+DEBUG = True
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", [])
 
