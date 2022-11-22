@@ -28,7 +28,7 @@ django-ckeditor==5.9.0
 django-extra-fields
 
 # Pillow
-Pillow==7.1.0
+Pillow==9.3.0
 
 # Requests
 requests==2.24.0
