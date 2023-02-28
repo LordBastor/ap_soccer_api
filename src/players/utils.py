@@ -12,7 +12,8 @@ def send_player_invite(name, email, uid, trip_name, trip_template, attachments):
 
     html_message = html_message.replace("{{player_name}}", name)
     html_message = html_message.replace(
-        "{{invitation_link}}", "{}?uid={}".format(settings.APP_URL, uid),
+        "{{invitation_link}}",
+        "{}?uid={}".format(settings.APP_URL, uid),
     )
 
     invitation_email = EmailMultiAlternatives(
@@ -28,7 +29,10 @@ def send_player_invite(name, email, uid, trip_name, trip_template, attachments):
     for attachment in attachments:
         invitation_email.attach_file(attachment.document.path)
 
-    return invitation_email.send(fail_silently=True)
+    try:
+        invitation_email.send(fail_silently=True)
+    except:
+        return invitation_email.send(fail_silently=True)
 
     return send_mail(
         subject=subject,
