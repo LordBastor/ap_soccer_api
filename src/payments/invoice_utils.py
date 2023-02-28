@@ -229,7 +229,11 @@ def generate_invoice_for_trip_invite(trip_invite, deposit_only):
     """
     # Let's check and avoid creating multiple deposit invoices in some edge-cases
     trip_invite.refresh_from_db()
-    if deposit_only and trip_invite.payment.paypalinvoice_set.count() > 0:
+    if (
+        deposit_only
+        and trip_invite.payment
+        and trip_invite.payment.paypalinvoice_set.count() > 0
+    ):
         return
 
     client = PayPalClient()
