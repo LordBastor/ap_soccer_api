@@ -31,4 +31,4 @@ django-extra-fields
 Pillow==7.1.0
 
 # Requests
-requests==2.24.0
+requests==2.31.0
