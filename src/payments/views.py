@@ -1,17 +1,15 @@
+from decimal import Decimal
+
 from django.contrib import messages
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from decimal import Decimal
-
-from payments.models import Payment, PayPalInvoice
-
 from payments.invoice_utils import PayPalClient, generate_invoice_for_trip_invite
+from payments.models import Payment, PayPalInvoice
 
 
 def record_payment(request, *args, **kwargs):
@@ -95,9 +93,9 @@ class RecordAPIPayment(APIView):
 
         # Let's grab the total amount paid so far
         payment_object = invoice_object.payment
-        total_amount_paid = payment_object.paypalinvoice_set.aggregate(Sum("amount_paid"))[
-            "amount_paid__sum"
-        ]
+        total_amount_paid = payment_object.paypalinvoice_set.aggregate(
+            Sum("amount_paid")
+        )["amount_paid__sum"]
 
         # Get the trip invite
         trip_invitation = invoice_object.payment.tripinvitation_set.all()[0]

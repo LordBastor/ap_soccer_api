@@ -7,6 +7,7 @@ from payments.models import Payment
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from trips.models import TripInvitation, TripTerms
 from trips.serializers import (
     TripDocumentUploadSerializer,
@@ -33,7 +34,9 @@ class TripInvitationView(APIView):
 
         data = request.data
 
-        payment = None
+        create_payment = False
+        amount_due = None
+        amount_deposit = None
 
         # Let's ensure no one is pushing wrong statuses or status is being pushed back
         if "status" in data and data["status"]:
@@ -88,10 +91,7 @@ class TripInvitationView(APIView):
                             ):
                                 amount_due += Decimal(companion["additional_price"])
 
-                payment = Payment.objects.create(
-                    amount_due=amount_due,
-                    amount_deposit=amount_deposit,
-                )
+                create_payment = True
 
                 data["total_amount_due"] = amount_due
 
@@ -109,7 +109,11 @@ class TripInvitationView(APIView):
             trip_invite = serializer.save()
 
             # Add payment if relevant
-            if payment:
+            if create_payment:
+                payment = Payment.objects.create(
+                    amount_due=amount_due,
+                    amount_deposit=amount_deposit,
+                )
                 trip_invite.payment = payment
                 trip_invite.save()
 
