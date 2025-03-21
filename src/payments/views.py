@@ -110,7 +110,10 @@ class RecordAPIPayment(APIView):
         # Moved this outside of the if/elif so we don't fail to update
         # the payment if invoice creation fails for some reason
         existing_invoice_count = trip_invitation.payment.paypalinvoice_set.count()
-        if trip_invitation.status == "Deposit Paid" and existing_invoice_count > 0:
+        if (
+            trip_invitation.status in ["Deposit Paid", "Paid"]
+            and existing_invoice_count == 1
+        ):
             # Create and send leftover invoice
             generate_invoice_for_trip_invite(trip_invitation, False)
 
